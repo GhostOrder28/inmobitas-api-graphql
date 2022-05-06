@@ -10,11 +10,11 @@ const newListingHandler = knex => (req, res) => {
     district,
     neighborhood,
     addressDetails,
-    contractType,
+    contractTypeId,
     petsAllowed,
     childrenAllowed,
     preferencesDetails,
-    estateType,
+    estateTypeId,
     estatePrice,
     floorLocation,
     floors,
@@ -48,10 +48,10 @@ const newListingHandler = knex => (req, res) => {
     .messages({ 'string.pattern.base': 'invalid character, only letters and spaces are allowed' }),
     addressDetails: Joi.string().pattern(/^[a-zA-Z0-9\.\:\;\,\s]+$/)
     .messages({ 'string.pattern.base': 'invalid character, only letters, spaces and .,:; special characters are allowed' }),
-    contractType: Joi.number().required(),
+    contractTypeId: Joi.number().required(),
     currency: Joi.number().required(),
     estatePrice: Joi.number(),
-    estateType: Joi.number().required(),
+    estateTypeId: Joi.number().required(),
     preferencesDetails: Joi.string().alphanum(),
     floorLocation: Joi.number(),
     floors: Joi.number(),
@@ -90,10 +90,10 @@ const newListingHandler = knex => (req, res) => {
     signedDate,
     startDate,
     endDate,
-    contractType,
+    contractTypeId,
     currency,
     estatePrice,
-    estateType,
+    estateTypeId,
     fee,
     ownerPreferencesDetails,
   }, { abortEarly: false })
@@ -102,8 +102,8 @@ const newListingHandler = knex => (req, res) => {
 
   let clientType = null;
 
-  if (contractType === 1) clientType = 'seller';
-  if (contractType === 2) clientType = 'landlord';
+  if (contractTypeId === 1) clientType = 'seller';
+  if (contractTypeId === 2) clientType = 'landlord';
 
   console.log('LOGGING data sent from frontend:');
   console.log(req.body);
@@ -115,7 +115,7 @@ const newListingHandler = knex => (req, res) => {
         const newClient = await trx.insert({
           user_id: userId,
           name: strParseIn(clientName),
-          client_type: contractType === 1 ? 'seller' : 'landlord',
+          client_type: contractTypeId === 1 ? 'seller' : 'landlord',
           contact_phone: clientContactPhone,
         })
         .into('clients')
@@ -130,7 +130,7 @@ const newListingHandler = knex => (req, res) => {
           district,
           neighborhood,
           address_details: addressDetails,
-          estate_type_id: estateType,
+          estate_type_id: estateTypeId,
           floor_location: floorLocation,
           number_of_floors: floors,
           total_area: totalArea,
@@ -161,9 +161,9 @@ const newListingHandler = knex => (req, res) => {
           user_id: userId,
           client_id: newClient[0].client_id,
           estate_id: newEstate[0].estate_id,
-          contract_type_id: contractType,
+          contract_type_id: contractTypeId,
           is_exclusive: isExclusive,
-          currency_id: currency,
+          currency_type_id: currency,
           estate_price: estatePrice,
           fee: fee,
           is_percentage: isPercentage,
@@ -178,7 +178,7 @@ const newListingHandler = knex => (req, res) => {
         console.log('LOGGING newContract:');
         console.log(newContract);
 
-        if (contractType === 2) { // if contractType is 'rental'
+        if (contractTypeId === 2) { // if contractTypeId is 'rental'
           const ownerPreferences = await trx.insert({
             estate_id: newEstate[0].estate_id,
             pets_allowed: petsAllowed,

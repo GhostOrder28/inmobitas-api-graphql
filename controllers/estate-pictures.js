@@ -1,7 +1,7 @@
 const estatePicturesHandler = knex => (req, res) => {
 
   const { userid, estateid } = req.params;
-  // console.log(`userid ${userid}`, `estateid ${estateid}`);
+  console.log(`userid ${userid}`, `estateid ${estateid}`);
 
   (async function () {
 

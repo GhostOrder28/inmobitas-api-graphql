@@ -10,22 +10,19 @@ const listingFormDataHandler = knex => (req, res) => {
       .from('estate_types')
       .returning('*');
 
-      console.log('--------------- LOGGING: estateTypes');
-      console.log(estateTypes);
+      console.log('estateTypes: ', estateTypes);
 
       const contractTypes = await knex.select('*')
       .from('contract_types')
       .returning('*');
 
-      console.log('--------------- LOGGING: contractTypes');
-      console.log(contractTypes);
+      console.log('contractTypes: ', contractTypes);
 
-      const currencies = await knex.select('*')
-      .from('currencies')
+      const currencyTypes = await knex.select('*')
+      .from('currency_types')
       .returning('*');
 
-      console.log('--------------- LOGGING: currencies');
-      console.log(currencies);
+      console.log('currencyTypes: ', currencyTypes);
 
       const dbPayload = {
         estateTypes: estateTypes.map(estate => ({
@@ -36,8 +33,8 @@ const listingFormDataHandler = knex => (req, res) => {
           contractTypeId: contract.contract_type_id,
           contractName: strParseOut(contract.contract_name)
         })),
-        currencies: currencies.map(currency => ({
-          currencyId: currency.currency_id,
+        currencyTypes: currencyTypes.map(currency => ({
+          currencyTypeId: currency.currency_type_id,
           currencyName: strParseOut(currency.currency_name),
           currencySymbol: currency.currency_symbol,
         }))

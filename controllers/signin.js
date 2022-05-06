@@ -43,7 +43,7 @@ const signInHandler = knex => (req, res) => {
       }
 
     } catch (err) {
-      throw new Error(`We couldn't register the user, reason: ${err}`)
+      throw new Error(`We couldn't sign in the user, reason: ${err}`)
     }
 
   })()

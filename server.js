@@ -48,7 +48,7 @@ app.post('/signup', signUp.signUpHandler(knex))
 app.post('/signin', signIn.signInHandler(knex))
 app.post('/upload/:userid/:estateid', uploadMiddleware.single('file'), uploadFile.uploadFileHandler(knex))
 app.put('/editlisting/:userid/:clientid/:estateid/:contractid', listing.listingHandler(knex))
-app.delete('/deletepicture/:pictureid', deletePictures.deletePicturesHandler(knex))
+app.delete('/deletepicture/:userid/:pictureid', deletePictures.deletePicturesHandler(knex))
 
 const PORT = process.env.PORT || 3001;
 

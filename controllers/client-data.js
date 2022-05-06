@@ -1,5 +1,8 @@
 const fs = require('fs-extra');
-const { strParseIn } = require('../utils/utility-functions');
+const types = require('pg').types;
+types.setTypeParser(20, function(value){
+  return parseInt(value, 10)
+})
 
 const clientDataHandler = knex => (req, res) => {
 
@@ -16,20 +19,18 @@ const clientDataHandler = knex => (req, res) => {
       .andWhere('clients.client_id', '=', clientId)
       .returning('*');
 
-      // console.log('--------------- LOGGING: clientData');
-      // console.log(clientData);
+      console.log('clientData: ', clientData);
 
-      const dbPayload = clientData.map(client => ({
-        clientId: client.client_id,
-        name: client.name,
-        contactPhone: client.contact_phone,
-        age: client.age,
-        clientType: client.client_type,
-        clientDetails: client.client_details,
-      }))
+      const dbPayload = {
+        clientId: clientData[0].client_id,
+        clientName: clientData[0].name,
+        clientContactPhone: clientData[0].contact_phone,
+        clientAge: clientData[0].age,
+        clientType: clientData[0].client_type,
+        clientDetails: clientData[0].client_details,
+      }
 
-      console.log('--------------- LOGGING: dbPayload');
-      console.log(dbPayload);
+      console.log('dbPayload: ', dbPayload);
 
       res.status(200).json(dbPayload)
 

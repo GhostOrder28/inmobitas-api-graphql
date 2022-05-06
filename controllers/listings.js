@@ -1,5 +1,5 @@
 const fs = require('fs-extra');
-const { strParseIn } = require('../utils/utility-functions');
+const { strParseOut } = require('../utils/utility-functions');
 
 const listingsHandler = knex => (req, res) => {
 
@@ -20,12 +20,12 @@ const listingsHandler = knex => (req, res) => {
       // console.log('--------------- LOGGING: listingsData');
       // console.log(listingsData);
 
-      const currencies = await knex.select('*')
-      .from('currencies')
+      const currency_types = await knex.select('*')
+      .from('currency_types')
       .returning('*')
 
-      // console.log('--------------- LOGGING: currencies');
-      // console.log(currencies);
+      // console.log('--------------- LOGGING: currency_types');
+      // console.log(currency_types);
 
       const contractTypes = await knex.select('*')
       .from('contract_types')
@@ -43,19 +43,10 @@ const listingsHandler = knex => (req, res) => {
 
       const dbPayload = listingsData.map(listing => ({
         estateId: listing.estate_id,
-        district: listing.district && listing.district,
-        neighborhood: listing.neighborhood && listing.neighborhood,
-        // addressDetails: listing.address_details && listing.address_details,
-        // contractType: contractTypes.find(contract => contract.contract_type_id === listing.contract_type_id).contract_name,
-        // utilitiesIncluded: listing.utilities_included,
-        // estateType: estateTypes.find(estate => estate.estate_type_id === listing.estate_type_id).estate_name,
-        currencySymbol: currencies.find(currency => currency.currency_id === listing.currency_id).currency_symbol,
+        district: listing.district && strParseOut(listing.district),
+        neighborhood: listing.neighborhood && strParseOut(listing.neighborhood),
+        currencySymbol: currency_types.find(currency => currency.currency_type_id === listing.currency_type_id).currency_symbol,
         estatePrice: listing.estate_price,
-        // fee: listing.fee,
-        // floorLocation: listing.floor_location && listing.floor_location,
-        // numberOfFloors: listing.number_of_floors && listing.number_of_floors,
-        // totalArea: listing.total_area && listing.total_area,
-        // builtArea: listing.built_area && listing.built_area,
       }))
 
       console.log('--------------- LOGGING: dbPayload');

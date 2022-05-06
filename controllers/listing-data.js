@@ -20,43 +20,42 @@ const listingDataHandler = knex => (req, res) => {
       .andWhere('estates.estate_id', '=', estateid)
       .returning('*');
 
-      console.log('--------------- LOGGING: listingData');
-      console.log(listingData);
+      console.log('listingData: ', listingData);
 
-      const dbPayload = listingData.map(listing => ({
-        clientId: listing.client_id,
-        estateId: listing.estate_id,
-        contractId: listing.contract_id,
-        clientName: strParseOut(listing.name),
-        clientContactPhone: listing.contact_phone,
-        contractType: listing.contract_type_id,
-        isExclusive: listing.is_exclusive,
-        currency: listing.currency_id,
-        fee: listing.fee,
-        isPercentage: listing.is_percentage,
-        signedDate: listing.signed_date,
-        startDate: listing.start_date,
-        endDate: listing.end_date,
-        estateType: listing.estate_type_id,
-        district: strParseOut(listing.district),
-        neighborhood: strParseOut(listing.neighborhood),
-        addressDetails: listing.address_details,
-        estatePrice: listing.estate_price,
-        floorLocation: listing.floor_location,
-        numberOfFloors: listing.number_of_floors,
-        totalArea: listing.total_area,
-        builtArea: listing.built_area,
-        estateDetails: listing.estate_details,
-        numberOfBedrooms: listing.number_of_bedrooms,
-        numberOfBathrooms: listing.number_of_bathrooms,
-        numberOfGarages: listing.number_of_garages,
-        numberOfKitchens: listing.number_of_kitchens,
-        haveNaturalGas: listing.natural_gas,
-        petsAllowed: listing.pets_allowed,
-        childrenAllowed: listing.children_allowed,
-        ownerPreferencesDetails: listing.owner_preferences_details,
-        utilitiesIncluded: listing.utilities_included,
-      }))
+      const dbPayload = {
+        clientId: listingData[0].client_id,
+        estateId: listingData[0].estate_id,
+        contractId: listingData[0].contract_id,
+        clientName: strParseOut(listingData[0].name),
+        clientContactPhone: Number(listingData[0].contact_phone), // why this prop was being returned as string?
+        contractTypeId: listingData[0].contract_type_id,
+        isExclusive: listingData[0].is_exclusive,
+        currencyTypeId: listingData[0].currency_type_id,
+        fee: listingData[0].fee,
+        isPercentage: listingData[0].is_percentage,
+        signedDate: listingData[0].signed_date,
+        startDate: listingData[0].start_date,
+        endDate: listingData[0].end_date,
+        estateTypeId: listingData[0].estate_type_id,
+        district: strParseOut(listingData[0].district),
+        neighborhood: strParseOut(listingData[0].neighborhood),
+        addressDetails: listingData[0].address_details,
+        estatePrice: listingData[0].estate_price,
+        floorLocation: listingData[0].floor_location,
+        numberOfFloors: listingData[0].number_of_floors,
+        totalArea: listingData[0].total_area,
+        builtArea: listingData[0].built_area,
+        estateDetails: listingData[0].estate_details,
+        numberOfBedrooms: listingData[0].number_of_bedrooms,
+        numberOfBathrooms: listingData[0].number_of_bathrooms,
+        numberOfGarages: listingData[0].number_of_garages,
+        numberOfKitchens: listingData[0].number_of_kitchens,
+        haveNaturalGas: listingData[0].natural_gas,
+        petsAllowed: listingData[0].pets_allowed,
+        childrenAllowed: listingData[0].children_allowed,
+        ownerPreferencesDetails: listingData[0].owner_preferences_details,
+        utilitiesIncluded: listingData[0].utilities_included,
+      }
 
       console.log('--------------- LOGGING: dbPayload');
       console.log(dbPayload);

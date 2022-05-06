@@ -19,8 +19,8 @@ const clientsHandler = knex => (req, res) => {
 
       const dbPayload = clientsData.map(client => ({
         clientId: client.client_id,
-        name: client.name,
-        contactPhone: client.contact_phone,
+        clientName: client.name,
+        clientContactPhone: client.contact_phone,
         clientType: client.client_type,
       }))
       res.status(200).json(dbPayload)

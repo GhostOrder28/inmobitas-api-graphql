@@ -1,5 +1,9 @@
 const strParseIn = str => {
-  return str.replaceAll(' ', '-').toLowerCase();
+  if (str) {
+    return str.replaceAll(' ', '-').toLowerCase();
+  } else {
+    return null
+  }
 };
 
 const strParseOut = str => {
