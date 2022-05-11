@@ -7,13 +7,7 @@ var types = require('pg').types;
 types.setTypeParser(1082, val => val);
 const knex = require('knex')({
   client: 'pg',
-  connection: {
-    host : process.env.HOST,
-    port : process.env.KNEX_PORT,
-    user : process.env.DB_USER,
-    database : process.env.DB,
-    debug: true,
-  }
+  connection: process.env.DATABASE_URL 
 });
 
 // controllers
