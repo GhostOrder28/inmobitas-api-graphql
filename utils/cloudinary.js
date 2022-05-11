@@ -24,7 +24,7 @@ const getPublicId = (userId, estateId, filename, size) =>
   `${getDirectoryPath(userId, estateId, size).substring(1)}/${filename}_${size}`;
 
 const getUrl = (userId, estateId, filename, size) => 
-  `${process.env.CLOUDINARY_UPLOAD_URL}${getDirectoryPath(userId, estateId, size)}/${filename}_${size}.webp`
+  `https://res.cloudinary.com/ghost-order/image/upload${getDirectoryPath(userId, estateId, size)}/${filename}_${size}.webp`
 
 module.exports = {
   cloudinary,
