@@ -1,24 +1,37 @@
 const fsPromises = require('fs-extra').promises;
+const { cloudinary, getPublicId } = require('../utils/cloudinary');
 
 const deletePicturesHandler = knex => (req, res) => {
 
-  (async function () {
+  const { userid, estateid, pictureid } = req.params;
 
+  const deletePicture = (publicId) => {
+    return new Promise((resolve, reject) => {
+      cloudinary.uploader.destroy(
+        publicId,
+        { resource_type: 'image' },
+        (error, result) => result ? resolve(result) : reject(error)
+      )
+    })
+  }
+
+  (async function () {
+    
     try {
       
       const deletedPicture = await knex('pictures')
-      .where('picture_id', '=', req.params.pictureid)
+      .where('picture_id', '=', pictureid)
       .del()
       .returning('*')
-      console.log(deletedPicture);
-      console.log('deletedPicture', req.params.pictureid);
 
-      fsPromises.unlink(`${process.env.USERS_PATH}/${req.params.userid}/pictures/l/${deletedPicture[0].filename}_l.${deletedPicture[0].suffix}`)
-        .then(() => console.log(`${deletedPicture[0].filename}_l has beend deleted!`))
-      fsPromises.unlink(`${process.env.USERS_PATH}/${req.params.userid}/pictures/s/${deletedPicture[0].filename}_s.${deletedPicture[0].suffix}`)
-        .then(() => console.log(`${deletedPicture[0].filename}_s has beend deleted!`))
+      const { filename } = deletedPicture[0];
 
-      res.status(200).json(Number(req.params.pictureid))
+      await Promise.all([
+        deletePicture(getPublicId(userid, estateid, filename, 'small')),
+        deletePicture(getPublicId(userid, estateid, filename, 'large')),
+      ])
+
+      res.status(200).json(Number(pictureid));
     } catch (err) {
       throw new Error (`there was an error: ${err}`)
     }

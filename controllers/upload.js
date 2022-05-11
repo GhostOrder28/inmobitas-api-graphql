@@ -1,62 +1,70 @@
-const { promisify } = require('util');
-const fs = require('fs-extra');
 const sharp = require('sharp');
-const sizeOf = promisify(require('image-size'))
-const { TEMP_DIR, USERS_DIR } = require('../utils/constants');
+const { cloudinary, bufferToStream, getDirectoryPath, getUrl } = require('../utils/cloudinary');
 
 const uploadFileHandler = knex => (req, res) => {
+
   const { userid, estateid } = req.params;
-  const { filename } = req.file;
+  const { buffer } = req.file;
+  const filename = userid+'_'+estateid+'_'+Date.now() + '-' + Math.round(Math.random() * 1E9);
+  console.log('filename: ', filename);
+
+  const cloudinaryUploader = (buffer, size) => {
+    return new Promise((resolve, reject) => {
+      const prom = cloudinary.uploader.upload_stream(
+        {
+          folder: getDirectoryPath(userid, estateid, size),
+          public_id: `${filename}_${size}`
+        },
+        (error, result) => result ? resolve(result) : reject(error)
+      );
+      bufferToStream(buffer).pipe(prom)
+    })
+  }
 
   console.log('file sent by multer: ', req.file);
 
   (async function () {
     try {
 
-      // const userData = await knex.select('names')
-      // .from('users')
-      // .where('user_id', '=', userid)
-      // .returning('*')
+      const smallPicBuffer = await sharp(buffer)
+        .toFormat('webp')
+        .webp({ quality: 90 })
+        .resize({ width: 480 })
+        .toBuffer()
 
-      const filenameWithOutSuffix = filename.substring(0, filename.indexOf('.') - 1);
-      const newSuffix = 'webp';
-      const tempPath = `${process.env.ROOT_PATH}/${TEMP_DIR}/${filename}`;
-      const sPath = `${process.env.ROOT_PATH}/users/${userid}/pictures/s/${filenameWithOutSuffix}_s.${newSuffix}`;
-      const lPath = `${process.env.ROOT_PATH}/users/${userid}/pictures/l/${filenameWithOutSuffix}_l.${newSuffix}`;
+      const largePicBuffer = await sharp(buffer)
+        .toFormat('webp')
+        .webp({ quality: 90 })
+        .resize({ width: 1920 })
+        .toBuffer()
 
-      const resizedPictures = await Promise.all([
-        await sharp(tempPath)
-          .toFormat(newSuffix)
-          .webp({ quality: 90 })
-          .resize({ width: 480 })
-          .toFile(sPath)
-          .catch(err => fs.unlinkSync(sPath)),
-        await sharp(tempPath)
-          .toFormat(newSuffix)
-          .webp({ quality: 90 })
-          .resize({ width: 1920 })
-          .toFile(lPath)
-          .catch(err => fs.unlinkSync(lPath)),
-      ]);
+      const uploadedPictures = await Promise.all([
+        cloudinaryUploader(smallPicBuffer, 'small'),
+        cloudinaryUploader(largePicBuffer, 'large')
+      ])
 
-      console.log('Done!', resizedPictures);
+      console.log('uploadedPictures: ', uploadedPictures);
 
       const pictureData = await knex.insert({
         user_id: userid,
         estate_id: estateid,
-        filename: filenameWithOutSuffix,
-        suffix: newSuffix,
+        filename,
       })
       .into('pictures')
       .returning('*')
 
       console.log('pictureData: ', pictureData);
 
-      res.status(200).json({
+      const payload = {
         pictureId: pictureData[0].picture_id,
-        filename: pictureData[0].filename,
-        suffix: pictureData[0].suffix,
-      });
+        filename,
+        smallSizeUrl: getUrl(userid, estateid, filename, 'small'),
+        largeSizeUrl: getUrl(userid, estateid, filename, 'large'),
+      } 
+
+      console.log('payload: ', payload);
+
+      res.status(200).json(payload);
 
     } catch (err) {
       throw new Error(`There is an error, ${err}`)

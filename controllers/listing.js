@@ -16,7 +16,7 @@ const listingHandler = knex => (req, res) => {
     estateTypeId,
     estatePrice,
     floorLocation,
-    floors,
+    numberOfFloors,
     totalArea,
     builtArea,
     numberOfBedrooms,
@@ -41,32 +41,33 @@ const listingHandler = knex => (req, res) => {
   const validationSchema = Joi.object({
     clientName: Joi.string().pattern(/^[a-zA-Z\s]+$/).required()
     .messages({ 'string.pattern.base': 'invalid character, only letters and spaces are allowed' }),
-    clientContactPhone: Joi.number().required(),
+    clientContactPhone: Joi.number().required().allow(null),
     district: Joi.string().pattern(/^[a-zA-Z\s]+$/).required()
     .messages({ 'string.pattern.base': 'invalid character, only letters and spaces are allowed' }),
-    neighborhood: Joi.string().pattern(/^[a-zA-Z\s]+$/)
+    neighborhood: Joi.string().pattern(/^[a-zA-Z\s]+$/).allow(null)
     .messages({ 'string.pattern.base': 'invalid character, only letters and spaces are allowed' }),
-    addressDetails: Joi.string().pattern(/^[a-zA-Z0-9\.\:\;\,\s]+$/)
+    addressDetails: Joi.string().pattern(/^[a-zA-Z0-9\.\:\;\,\s]+$/).allow(null)
     .messages({ 'string.pattern.base': 'invalid character, only letters, spaces and .,:; special characters are allowed' }),
-    contractTypeId: Joi.number().required(),
-    currencyTypeId: Joi.number().required(),client_type: contractTypeId === 1 ? 'seller' : 'landlord',
-    estatePrice: Joi.number(),
+    contractTypeId: Joi.number().required().allow(null),
+    currencyTypeId: Joi.number().required().allow(null),
+    client_type: contractTypeId === 1 ? 'seller' : 'landlord',
+    estatePrice: Joi.number().allow(null),
     estateTypeId: Joi.number().required(),
-    floorLocation: Joi.number(),
-    floors: Joi.number(),
-    totalArea: Joi.number(),
-    builtArea: Joi.number(),
-    numberOfBedrooms: Joi.number(),
-    numberOfBathrooms: Joi.number(),
-    numberOfGarages: Joi.number(),
-    numberOfKitchens: Joi.number(),
-    estateDetails: Joi.string().pattern(/^[a-zA-Z0-9\.\:\;\,\s]+$/)
+    floorLocation: Joi.number().allow(null),
+    numberOfFloors: Joi.number().allow(null),
+    totalArea: Joi.number().allow(null),
+    builtArea: Joi.number().allow(null),
+    numberOfBedrooms: Joi.number().allow(null),
+    numberOfBathrooms: Joi.number().allow(null),
+    numberOfGarages: Joi.number().allow(null),
+    numberOfKitchens: Joi.number().allow(null),
+    estateDetails: Joi.string().pattern(/^[a-zA-Z0-9\.\:\;\,\s]+$/).allow(null)
     .messages({ 'string.pattern.base': 'invalid character, only letters, spaces and .,:; special characters are allowed' }),
-    fee: Joi.number(),
-    signedDate: Joi.date(),
-    startDate: Joi.date(),
-    endDate: Joi.date(),
-    ownerPreferencesDetails: Joi.string().pattern(/^[a-zA-Z0-9\.\:\;\,\s]+$/)
+    fee: Joi.number().allow(null),
+    signedDate: Joi.date().allow(null),
+    startDate: Joi.date().allow(null),
+    endDate: Joi.date().allow(null),
+    ownerPreferencesDetails: Joi.string().pattern(/^[a-zA-Z0-9\.\:\;\,\s]+$/).allow(null)
     .messages({ 'string.pattern.base': 'invalid character, only letters, spaces and .,:; special characters are allowed' }),
   });
 
@@ -77,7 +78,7 @@ const listingHandler = knex => (req, res) => {
     neighborhood,
     addressDetails,
     floorLocation,
-    floors,
+    numberOfFloors,
     totalArea,
     builtArea,
     numberOfBedrooms,
@@ -134,7 +135,7 @@ const listingHandler = knex => (req, res) => {
           address_details: addressDetails,
           estate_type_id: estateTypeId,
           floor_location: estateTypeId !== 1 ? floorLocation : null,
-          number_of_floors: estateTypeId === 1 ? floors : null,
+          number_of_floors: estateTypeId === 1 ? numberOfFloors : null,
           total_area: totalArea,
           built_area: builtArea,
           estate_details: estateDetails,
@@ -244,8 +245,8 @@ const listingHandler = knex => (req, res) => {
           neighborhood: strParseOut(estateData[0].neighborhood),
           addressDetails: estateData[0].address_details,
           estatePrice: contractData[0].estate_price,
-          floorLocation: featuresData[0].floor_location,
-          numberOfFloors: featuresData[0].number_of_floors,
+          floorLocation: estateData[0].floor_location,
+          numberOfFloors: estateData[0].number_of_floors,
           totalArea: estateData[0].total_area,
           builtArea: estateData[0].built_area,
           estateDetails: estateData[0].estate_details,

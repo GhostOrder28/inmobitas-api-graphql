@@ -1,3 +1,5 @@
+const cloudinary = require('cloudinary').v2;
+
 const strParseIn = str => {
   if (str) {
     return str.replaceAll(' ', '-').toLowerCase();
@@ -14,22 +16,32 @@ const strParseOut = str => {
   }
 };
 
-const randomNumbersGenerator = () => {
+const randomNumberGenerator = () => {
   return Date.now() + '-' + Math.round(Math.random() * 1E9)
 };
 
-const generateUniqueFileName = (entity, name) => { // repetitive code
-  return entity+'_'+name+'_'+uuidv4();
-};
 
 const suffixGenerator = mimeType => {
   return mimeType.substring(mimeType.lastIndexOf('/')+1);
 }
 
+const cloudinaryUnsignedUploader = (image, preset) => {
+  return new Promise((resolve, reject) => {
+    cloudinary.uploader.unsigned_upload(
+      image, 
+      preset,
+      { cloud_name: "ghost-order" },
+      function(error, result) {
+        if (error) return reject(err);
+        return resolve(result);
+      });
+  })
+}
+
 module.exports = {
   strParseIn,
   strParseOut,
-  randomNumbersGenerator,
-  generateUniqueFileName,
+  randomNumberGenerator,
   suffixGenerator,
+  cloudinaryUnsignedUploader,
 }

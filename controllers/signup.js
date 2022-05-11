@@ -1,6 +1,6 @@
 const fs = require('fs-extra');
 const bcrypt = require('bcrypt');
-const { usersDir } = require('../utils/constants');
+const { USERS_DIR } = require('../utils/constants');
 const { strParseIn } = require('../utils/utility-functions');
 const Joi = require('joi');
 const { DbError, DuplicateDataError } = require('../errors/db-errors');
@@ -48,10 +48,10 @@ const signUpHandler = knex => (req, res) => {
       .into('users')
       .returning('*')
 
-      await fs.mkdir(`${usersDir}/${newUser[0].user_id}`);
-      await fs.mkdir(`${usersDir}/${newUser[0].user_id}/pictures`);
-      await fs.mkdir(`${usersDir}/${newUser[0].user_id}/pictures/l`);
-      await fs.mkdir(`${usersDir}/${newUser[0].user_id}/pictures/s`);
+      //await fs.mkdir(`${USERS_DIR}/${newUser[0].user_id}`);
+      //await fs.mkdir(`${USERS_DIR}/${newUser[0].user_id}/pictures`);
+      //await fs.mkdir(`${USERS_DIR}/${newUser[0].user_id}/pictures/l`);
+      //await fs.mkdir(`${USERS_DIR}/${newUser[0].user_id}/pictures/s`);
 
       res.status(200).json({ userId: newUser[0].user_id, names, email })
 
