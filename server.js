@@ -2,6 +2,8 @@ const express = require('express');
 require('dotenv').config();
 const app = express();
 if (process.env.LE_URL && process.env.LE_CONTENT) {
+  console.log('LE_URL: ', process.env.LE_URL);
+  console.log('LE_CONTENT: ', process.env.LE_CONTENT);
   app.get(process.env.LE_URL, function(req, res) {
     return res.send(process.env.LE_CONTENT)
   });
