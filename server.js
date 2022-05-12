@@ -32,7 +32,7 @@ const uploadFile = require('./controllers/upload');
 const estatePictures = require('./controllers/estate-pictures');
 const deletePictures = require('./controllers/delete-pictures');
 
-app.use(express.static('public'));
+app.use(express.static(__dirname+'/public/'));
 app.use(express.json());
 app.use(express.urlencoded({extended: false}));
 app.use(cors());
