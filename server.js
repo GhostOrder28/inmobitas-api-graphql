@@ -1,11 +1,11 @@
 const express = require('express');
 require('dotenv').config();
+const app = express();
 if (process.env.LE_URL && process.env.LE_CONTENT) {
   app.get(process.env.LE_URL, function(req, res) {
     return res.send(process.env.LE_CONTENT)
   });
 }
-const app = express();
 const cors = require('cors');
 const { uploadMiddleware } = require('./utils/multer-conf');
 var types = require('pg').types;
