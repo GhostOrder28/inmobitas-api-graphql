@@ -1,4 +1,5 @@
 const express = require('express');
+const path = require('node:path');
 require('dotenv').config();
 const app = express();
 if (process.env.LE_URL && process.env.LE_CONTENT) {
@@ -32,7 +33,7 @@ const uploadFile = require('./controllers/upload');
 const estatePictures = require('./controllers/estate-pictures');
 const deletePictures = require('./controllers/delete-pictures');
 
-app.use(express.static(__dirname+'/public/'));
+app.use(express.static(path.join(__dirname, "public")));
 app.use(express.json());
 app.use(express.urlencoded({extended: false}));
 app.use(cors());
