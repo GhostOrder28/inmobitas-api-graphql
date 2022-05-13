@@ -59,7 +59,7 @@ const listingDataHandler = knex => (req, res) => {
 
       console.log('--------------- LOGGING: dbPayload');
       console.log(dbPayload);
-
+      
       res.status(200).json(dbPayload)
     } catch (err) {
       throw new Error(err)
