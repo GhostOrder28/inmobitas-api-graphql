@@ -8,7 +8,7 @@ var types = require('pg').types;
 types.setTypeParser(1082, val => val);
 const knex = require('knex')({
   client: 'pg',
-  connection: 'postgres://xgnpdwmycbmamz:c2b9a0a9f962ff1252ea75fa0413ef22762cb5cee3b83f79f8191f1ac3cda444@ec2-52-86-56-90.compute-1.amazonaws.com:5432/dancmfmi50mg16' 
+  connection: process.env.POSTGRES_CONNECTION_STRING 
 });
 
 // controllers
