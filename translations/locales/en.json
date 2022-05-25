@@ -5,6 +5,7 @@
 	"lettersAndSpacesOnlyAllowed": "Invalid character, only letters and spaces are allowed.",
 	"lettersSpacesAndSpecialCharactersOnlyAllowed": "Invalid character, only letters, spaces and .,:; special characters are allowed",
 	"passwordsMustMatch": "Passwords must match.",
+	"clientNameRequired": "Client name is required",
 	"clientContactPhoneRequired": "Client contact phone is required.",
 	"districtRequired": "District is required."
 }

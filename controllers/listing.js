@@ -40,7 +40,10 @@ const listingHandler = knex => (req, res) => {
 
   const validationSchema = Joi.object({
     clientName: Joi.string().pattern(/^[a-zA-Z\s]+$/).required()
-    .messages({ 'string.pattern.base': req.t('lettersAndSpacesOnlyAllowed') }),
+    .messages({
+      'string.pattern.base': req.t('lettersAndSpacesOnlyAllowed'),
+      'any.required': req.t('clientNameRequired')
+    }),
     clientContactPhone: Joi.number().required()
     .messages({ 'any.required': req.t('clientContactPhoneRequired') }),
     district: Joi.string().pattern(/^[a-zA-Z\s]+$/).required()
