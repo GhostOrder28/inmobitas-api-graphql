@@ -17,10 +17,11 @@ const signUpHandler = knex => (req, res) => {
 
   const validationSchema = Joi.object({
     names: Joi.string().pattern(/^[a-zA-Z\s]+$/).max(50).required()
-    .messages({ 'string.pattern.base': 'invalid character, only letters are allowed' }),
+      .messages({ 'string.pattern.base': req.t('lettersOnlyAllowed') }),
     email: Joi.string().email().required(),
     password: Joi.string().alphanum().strip().required(),
-    confirmPassword: Joi.ref('password'),
+    confirmPassword: Joi.any().valid(Joi.ref('password'))
+      .messages({ 'any.only': req.t('passwordsMustMatch') })
   });
 
   const { error, value } = validationSchema.validate({
@@ -48,16 +49,11 @@ const signUpHandler = knex => (req, res) => {
       .into('users')
       .returning('*')
 
-      //await fs.mkdir(`${USERS_DIR}/${newUser[0].user_id}`);
-      //await fs.mkdir(`${USERS_DIR}/${newUser[0].user_id}/pictures`);
-      //await fs.mkdir(`${USERS_DIR}/${newUser[0].user_id}/pictures/l`);
-      //await fs.mkdir(`${USERS_DIR}/${newUser[0].user_id}/pictures/s`);
-
       res.status(200).json({ userId: newUser[0].user_id, names, email })
 
     } catch (err) {
       if (err.code === UNIQUE_VIOLATION && err.constraint === 'agents_email_key') {
-        return res.status(400).json({ duplicateEntityError: 'email already exists' })
+        return res.status(400).json({ duplicateEntityError: req.t('emailAlreadyExists') })
       }
       throw new Error(`We couldn't register the user, reason: ${err}`)
     }

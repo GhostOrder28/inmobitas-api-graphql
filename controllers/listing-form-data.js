@@ -2,6 +2,8 @@ const { strParseOut } = require('../utils/utility-functions');
 
 const listingFormDataHandler = knex => (req, res) => {
 
+  const clientLang = req.headers["accept-language"];
+
   (async function () {
 
     try {
@@ -27,15 +29,15 @@ const listingFormDataHandler = knex => (req, res) => {
       const dbPayload = {
         estateTypes: estateTypes.map(estate => ({
           estateTypeId: estate.estate_type_id,
-          estateName: strParseOut(estate.estate_name),
+          estateName: clientLang.includes('es') ? strParseOut(estate.estate_name_es) : strParseOut(estate.estate_name),
         })),
         contractTypes: contractTypes.map(contract => ({
           contractTypeId: contract.contract_type_id,
-          contractName: strParseOut(contract.contract_name)
+          contractName: clientLang.includes('es') ? strParseOut(contract.contract_name_es) : strParseOut(contract.contract_name)
         })),
         currencyTypes: currencyTypes.map(currency => ({
           currencyTypeId: currency.currency_type_id,
-          currencyName: strParseOut(currency.currency_name),
+          currencyName: clientLang.includes('es') ? strParseOut(currency.currency_name_es) : strParseOut(currency.currency_name),
           currencySymbol: currency.currency_symbol,
         }))
       };

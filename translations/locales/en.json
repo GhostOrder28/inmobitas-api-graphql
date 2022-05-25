@@ -1,0 +1,10 @@
+{
+	"wrongCredentials": "Wrong credentials.",
+	"emailAlreadyExists": "Email already exists.",
+	"lettersOnlyAllowed": "Invalid character, only letters are allowed.",
+	"lettersAndSpacesOnlyAllowed": "Invalid character, only letters and spaces are allowed.",
+	"lettersSpacesAndSpecialCharactersOnlyAllowed": "Invalid character, only letters, spaces and .,:; special characters are allowed",
+	"passwordsMustMatch": "Passwords must match.",
+	"clientContactPhoneRequired": "Client contact phone is required.",
+	"districtRequired": "District is required."
+}

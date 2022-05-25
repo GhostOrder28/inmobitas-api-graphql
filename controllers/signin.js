@@ -27,7 +27,7 @@ const signInHandler = knex => (req, res) => {
       .where('email', '=', strParseIn(email))
       .returning('*')
 
-      if (!getUserData.length) return res.status(400).json({ authErrors: 'Wrong credentials' })
+      if (!getUserData.length) return res.status(400).json({ authErrors: req.t('wrongCredentials')})
       userId = getUserData[0].user_id;
 
       const match = await bcrypt.compare(password, getUserData[0].password);
@@ -39,7 +39,7 @@ const signInHandler = knex => (req, res) => {
           email
         })
       } else {
-        return res.status(400).json({ authErrors: 'Wrong credentials' })
+        return res.status(400).json({ authErrors: req.t('wrongCredentials')})
       }
 
     } catch (err) {

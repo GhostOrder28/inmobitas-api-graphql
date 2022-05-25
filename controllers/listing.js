@@ -40,16 +40,20 @@ const listingHandler = knex => (req, res) => {
 
   const validationSchema = Joi.object({
     clientName: Joi.string().pattern(/^[a-zA-Z\s]+$/).required()
-    .messages({ 'string.pattern.base': 'invalid character, only letters and spaces are allowed' }),
-    clientContactPhone: Joi.number().required().allow(null),
+    .messages({ 'string.pattern.base': req.t('lettersAndSpacesOnlyAllowed') }),
+    clientContactPhone: Joi.number().required()
+    .messages({ 'any.required': req.t('clientContactPhoneRequired') }),
     district: Joi.string().pattern(/^[a-zA-Z\s]+$/).required()
-    .messages({ 'string.pattern.base': 'invalid character, only letters and spaces are allowed' }),
+    .messages({
+      'string.pattern.base': req.t('lettersAndSpacesOnlyAllowed'),
+      'any.required': req.t('districtRequired') 
+    }),
     neighborhood: Joi.string().pattern(/^[a-zA-Z\s]+$/).allow(null)
-    .messages({ 'string.pattern.base': 'invalid character, only letters and spaces are allowed' }),
+    .messages({ 'string.pattern.base': req.t('lettersAndSpacesOnlyAllowed') }),
     addressDetails: Joi.string().pattern(/^[a-zA-Z0-9\.\:\;\,\s]+$/).allow(null)
-    .messages({ 'string.pattern.base': 'invalid character, only letters, spaces and .,:; special characters are allowed' }),
-    contractTypeId: Joi.number().required().allow(null),
-    currencyTypeId: Joi.number().required().allow(null),
+    .messages({ 'string.pattern.base': req.t('lettersSpacesAndSpecialCharactersOnlyAllowed') }),
+    contractTypeId: Joi.number().required(),
+    currencyTypeId: Joi.number().required(),
     client_type: contractTypeId === 1 ? 'seller' : 'landlord',
     estatePrice: Joi.number().allow(null),
     estateTypeId: Joi.number().required(),
@@ -62,13 +66,13 @@ const listingHandler = knex => (req, res) => {
     numberOfGarages: Joi.number().allow(null),
     numberOfKitchens: Joi.number().allow(null),
     estateDetails: Joi.string().pattern(/^[a-zA-Z0-9\.\:\;\,\s]+$/).allow(null)
-    .messages({ 'string.pattern.base': 'invalid character, only letters, spaces and .,:; special characters are allowed' }),
+    .messages({ 'string.pattern.base': req.t('lettersSpacesAndSpecialCharactersOnlyAllowed') }),
     fee: Joi.number().allow(null),
     signedDate: Joi.date().allow(null),
     startDate: Joi.date().allow(null),
     endDate: Joi.date().allow(null),
     ownerPreferencesDetails: Joi.string().pattern(/^[a-zA-Z0-9\.\:\;\,\s]+$/).allow(null)
-    .messages({ 'string.pattern.base': 'invalid character, only letters, spaces and .,:; special characters are allowed' }),
+    .messages({ 'string.pattern.base': req.t('lettersSpacesAndSpecialCharactersOnlyAllowed') }),
   });
 
   const { error, value } = validationSchema.validate({
@@ -96,6 +100,7 @@ const listingHandler = knex => (req, res) => {
     fee,
     ownerPreferencesDetails,
   }, { abortEarly: false })
+  console.log('joi errors: ', error);
 
   if (error) return res.status(400).json({ validationErrors: error.details })
 

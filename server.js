@@ -4,11 +4,18 @@ require('dotenv').config();
 const app = express();
 const cors = require('cors');
 const { uploadMiddleware } = require('./utils/multer-conf');
+const i18next = require('./translations/i18n-config');
+const middleware = require('i18next-http-middleware');
 var types = require('pg').types;
 types.setTypeParser(1082, val => val);
 const knex = require('knex')({
   client: 'pg',
-  connection: process.env.POSTGRES_CONNECTION_STRING 
+  connection: process.env.POSTGRES_CONNECTION_STRING || {
+    host : '127.0.0.1',
+    port : 5432,
+    user : 'ghost',
+    database : 'inmobitas'
+  } 
 });
 
 // controllers
@@ -30,6 +37,7 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use(express.json());
 app.use(express.urlencoded({extended: false}));
 app.use(cors());
+app.use(middleware.handle(i18next))
 
 app.get('/listings/:userid', listings.listingsHandler(knex))
 app.get('/listing/:userid/:estateid', listingData.listingDataHandler(knex))
