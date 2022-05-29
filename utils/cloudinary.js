@@ -1,6 +1,8 @@
 const cloudinary = require('cloudinary').v2;
 const { Readable } = require('stream');
 
+const uploadPath = 'https://res.cloudinary.com/ghost-order/image/upload';
+
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
@@ -17,19 +19,41 @@ const bufferToStream = buffer => {
   return readable;
 }
 
-const getDirectoryPath = (userId, estateId, size) =>
+const getPicturesDirPath = (userId, estateId, size) =>
   `/inmobitas/u_${userId}/l_${estateId}/pictures/${size}`;
+
+const getPdfDirPath = (userId, estateId) =>
+  `/inmobitas/u_${userId}/l_${estateId}`;
 
 const getPublicId = (userId, estateId, filename, size) =>
   `${getDirectoryPath(userId, estateId, size).substring(1)}/${filename}_${size}`;
 
-const getUrl = (userId, estateId, filename, size) => 
-  `https://res.cloudinary.com/ghost-order/image/upload${getDirectoryPath(userId, estateId, size)}/${filename}_${size}.webp`
+const getPictureUrl = (userId, estateId, filename, size) => 
+  `${uploadPath}${getPicturesDirPath(userId, estateId, size)}/${filename}_${size}.webp`
+
+const getPdfUrl = (userId, estateId, filename) => 
+  `${uploadPath}/fl_attachment:${filename}${getPdfDirPath(userId, estateId)}/${filename}.pdf`
+
+const cloudinaryUploader = (buffer, filename, directory, mediaType, size) => {
+  return new Promise((resolve, reject) => {
+    const prom = cloudinary.uploader.upload_stream(
+      {
+        folder: directory,
+        public_id: mediaType === 'img' ? `${filename}_${size}` : filename
+      },
+      (error, result) => result ? resolve(result) : reject(error)
+    );
+    bufferToStream(buffer).pipe(prom)
+  })
+}
 
 module.exports = {
   cloudinary,
   bufferToStream,
-  getDirectoryPath,
+  getPicturesDirPath,
+  getPdfDirPath,
   getPublicId,
-  getUrl,
+  getPictureUrl,
+  getPdfUrl,
+  cloudinaryUploader,
 }

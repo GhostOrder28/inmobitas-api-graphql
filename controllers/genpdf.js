@@ -1,5 +1,5 @@
 const { jsPDF } = require('jspdf');
-const { getUrl } = require('../utils/cloudinary');
+const { getPictureUrl } = require('../utils/cloudinary');
 const fetch = require('node-fetch');
 const base64Img = require('base64-img');
 const { writeFile } = require('fs');
@@ -28,10 +28,10 @@ const genPdfHandler = knex => async (req, res) => {
       .andWhere('estate_id', '=', estateId)
       .returning('*')
 
-    const urls = listingImages.map(img => getUrl(userId, estateId, img.filename, 'large'));
-    const pdfPath = await exportPdf(urls);
+    const urls = listingImages.map(img => getPictureUrl(userId, estateId, img.filename, 'large'));
+    const pdfPath = await exportPdf(urls, userId, estateId);
     console.log(`sending file to the client for download: ${pdfPath}`);
-    res.download(pdfPath);
+    res.send(pdfPath);
 
   } catch (error) {
     console.log(error); 

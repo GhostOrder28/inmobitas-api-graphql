@@ -20,7 +20,6 @@ const randomNumberGenerator = () => {
   return Date.now() + '-' + Math.round(Math.random() * 1E9)
 };
 
-
 const suffixGenerator = mimeType => {
   return mimeType.substring(mimeType.lastIndexOf('/')+1);
 }

@@ -1,27 +1,12 @@
 const sharp = require('sharp');
-const { cloudinary, bufferToStream, getDirectoryPath, getUrl } = require('../utils/cloudinary');
+const { cloudinaryUploader, getPictureUrl, getPicturesDirPath } = require('../utils/cloudinary');
+const { randomNumberGenerator } = require('../utils/utility-functions');
 
 const uploadFileHandler = knex => (req, res) => {
 
   const { userid, estateid } = req.params;
   const { buffer } = req.file;
-  const filename = userid+'_'+estateid+'_'+Date.now() + '-' + Math.round(Math.random() * 1E9);
-  console.log('filename: ', filename);
-
-  const cloudinaryUploader = (buffer, size) => {
-    return new Promise((resolve, reject) => {
-      const prom = cloudinary.uploader.upload_stream(
-        {
-          folder: getDirectoryPath(userid, estateid, size),
-          public_id: `${filename}_${size}`
-        },
-        (error, result) => result ? resolve(result) : reject(error)
-      );
-      bufferToStream(buffer).pipe(prom)
-    })
-  }
-
-  console.log('file sent by multer: ', req.file);
+  const filename = userid+'_'+estateid+'_'+randomNumberGenerator();
 
   (async function () {
     try {
@@ -39,8 +24,20 @@ const uploadFileHandler = knex => (req, res) => {
         .toBuffer()
 
       const uploadedPictures = await Promise.all([
-        cloudinaryUploader(smallPicBuffer, 'small'),
-        cloudinaryUploader(largePicBuffer, 'large')
+        cloudinaryUploader(
+          smallPicBuffer,
+          filename,
+          getPicturesDirPath(userid, estateid, 'small'),
+          'img',
+          'small'
+        ),
+        cloudinaryUploader(
+          largePicBuffer,
+          filename,
+          getPicturesDirPath(userid, estateid, 'large'),
+          'img',
+          'large'
+        )
       ])
 
       console.log('uploadedPictures: ', uploadedPictures);
@@ -58,8 +55,8 @@ const uploadFileHandler = knex => (req, res) => {
       const payload = {
         pictureId: pictureData[0].picture_id,
         filename,
-        smallSizeUrl: getUrl(userid, estateid, filename, 'small'),
-        largeSizeUrl: getUrl(userid, estateid, filename, 'large'),
+        smallSizeUrl: getPictureUrl(userid, estateid, filename, 'small'),
+        largeSizeUrl: getPictureUrl(userid, estateid, filename, 'large'),
       } 
 
       console.log('payload: ', payload);

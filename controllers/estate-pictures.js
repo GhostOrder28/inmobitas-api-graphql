@@ -1,4 +1,4 @@
-const { getUrl } = require('../utils/cloudinary');
+const { getPictureUrl } = require('../utils/cloudinary');
 
 const estatePicturesHandler = knex => (req, res) => {
 
@@ -19,8 +19,8 @@ const estatePicturesHandler = knex => (req, res) => {
       const payload = pictures.map(pic => ({
         pictureId: pic.picture_id,
         filename: pic.filename,
-        smallSizeUrl: getUrl(userid, estateid, pic.filename, 'small'),
-        largeSizeUrl: getUrl(userid, estateid, pic.filename, 'large'),
+        smallSizeUrl: getPictureUrl(userid, estateid, pic.filename, 'small'),
+        largeSizeUrl: getPictureUrl(userid, estateid, pic.filename, 'large'),
       }))
 
       console.log('payload: ', payload);
