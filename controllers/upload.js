@@ -13,13 +13,13 @@ const uploadFileHandler = knex => (req, res) => {
 
       const smallPicBuffer = await sharp(buffer)
         .toFormat('webp')
-        .webp({ quality: 90 })
+        .webp({ quality: 80 })
         .resize({ width: 480 })
         .toBuffer()
 
       const largePicBuffer = await sharp(buffer)
         .toFormat('webp')
-        .webp({ quality: 90 })
+        .webp({ quality: 80 })
         .resize({ width: 1920 })
         .toBuffer()
 

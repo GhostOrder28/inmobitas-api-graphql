@@ -29,7 +29,7 @@ async function exportPdf(urls, userId, estateId) {
       const buffer = Buffer.from(body);
       const optimizedImage = await sharp(buffer)
         .toFormat('jpeg')
-        .webp({ quality: 20 })
+        .jpeg({ quality: 80 })
         .toBuffer()
       const imageBase64  = optimizedImage.toString('base64');
       const dataUrlPrefix = `data:image/webp;base64,`;

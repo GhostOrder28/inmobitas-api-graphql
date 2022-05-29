@@ -20,13 +20,17 @@ const bufferToStream = buffer => {
 }
 
 const getPicturesDirPath = (userId, estateId, size) =>
-  `/inmobitas/u_${userId}/l_${estateId}/pictures/${size}`;
+  process.env.NODE_ENV === 'production' ?
+    `/inmobitas/u_${userId}/l_${estateId}/pictures/${size}` :
+    `/inmobitas_dev/u_${userId}/l_${estateId}/pictures/${size}`;
 
 const getPdfDirPath = (userId, estateId) =>
-  `/inmobitas/u_${userId}/l_${estateId}`;
+  process.env.NODE_ENV === 'production' ?
+    `/inmobitas/u_${userId}/l_${estateId}` :
+    `/inmobitas_dev/u_${userId}/l_${estateId}`
 
-const getPublicId = (userId, estateId, filename, size) =>
-  `${getDirectoryPath(userId, estateId, size).substring(1)}/${filename}_${size}`;
+const getPicturePublicId = (userId, estateId, filename, size) =>
+  `${getPicturesDirPath(userId, estateId, size).substring(1)}/${filename}_${size}`;
 
 const getPictureUrl = (userId, estateId, filename, size) => 
   `${uploadPath}${getPicturesDirPath(userId, estateId, size)}/${filename}_${size}.webp`
@@ -52,7 +56,7 @@ module.exports = {
   bufferToStream,
   getPicturesDirPath,
   getPdfDirPath,
-  getPublicId,
+  getPicturePublicId,
   getPictureUrl,
   getPdfUrl,
   cloudinaryUploader,

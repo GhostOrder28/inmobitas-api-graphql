@@ -1,5 +1,5 @@
 const fsPromises = require('fs-extra').promises;
-const { cloudinary, getPublicId } = require('../utils/cloudinary');
+const { cloudinary, getPicturePublicId } = require('../utils/cloudinary');
 
 const deletePicturesHandler = knex => (req, res) => {
 
@@ -27,8 +27,8 @@ const deletePicturesHandler = knex => (req, res) => {
       const { filename } = deletedPicture[0];
 
       await Promise.all([
-        deletePicture(getPublicId(userid, estateid, filename, 'small')),
-        deletePicture(getPublicId(userid, estateid, filename, 'large')),
+        deletePicture(getPicturePublicId(userid, estateid, filename, 'small')),
+        deletePicture(getPicturePublicId(userid, estateid, filename, 'large')),
       ])
 
       res.status(200).json(Number(pictureid));
