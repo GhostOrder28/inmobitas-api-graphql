@@ -32,7 +32,8 @@ const listingFormData = require('./controllers/listing-form-data');
 const uploadFile = require('./controllers/upload');
 const estatePictures = require('./controllers/estate-pictures');
 const deletePictures = require('./controllers/delete-pictures');
-const genPdf = require('./controllers/genpdf')
+const getDocument = require('./controllers/get-document')
+const deleteDocument = require('./controllers/delete-document');
 
 app.use(express.static(path.join(__dirname, "public")));
 app.use(express.json({limit: '50mb'}));
@@ -50,13 +51,14 @@ app.get('/client/:userid/:clientid', clientData.clientDataHandler(knex))
 app.get('/listings/:userid/:clientid', clientListings.clientListingsHandler(knex))
 app.get('/listingformdata', listingFormData.listingFormDataHandler(knex))
 app.get('/estatepictures/:userid/:estateid', estatePictures.estatePicturesHandler(knex))
-app.get('/genpdf/:userid/:estateid', genPdf.genPdfHandler(knex))
+app.get('/genpdf/:userid/:estateid', getDocument.getDocumentHandler(knex))
 app.post('/newlisting/:userid', listing.listingHandler(knex))
 app.post('/signup', signUp.signUpHandler(knex))
 app.post('/signin', signIn.signInHandler(knex))
 app.post('/upload/:userid/:estateid', uploadMiddleware.single('file'), uploadFile.uploadFileHandler(knex))
 app.put('/editlisting/:userid/:clientid/:estateid/:contractid', listing.listingHandler(knex))
-app.delete('/deletepicture/:userid/:estateid/:pictureid', deletePictures.deletePicturesHandler(knex))
+app.delete('/deletepicture/:userid/:estateid/:pictureid', deletePictures.deletePicturesHandler(knex)) 
+app.delete('/deletedocument/:userid/:estateid', deleteDocument.deleteDocumentHandler(knex))
 
 const PORT = process.env.PORT || 3001;
 

@@ -35,8 +35,8 @@ const getPicturePublicId = (userId, estateId, filename, size) =>
 const getPictureUrl = (userId, estateId, filename, size) => 
   `${uploadPath}${getPicturesDirPath(userId, estateId, size)}/${filename}_${size}.webp`
 
-const getPdfUrl = (userId, estateId, filename) => 
-  `${uploadPath}/fl_attachment:${filename}${getPdfDirPath(userId, estateId)}/${filename}.pdf`
+const getDownloadablePdfUrl = (publicId, filename) =>
+  `${uploadPath}/fl_attachment:${filename}/${publicId}.pdf`
 
 const cloudinaryUploader = (buffer, filename, directory, mediaType, size) => {
   return new Promise((resolve, reject) => {
@@ -51,6 +51,16 @@ const cloudinaryUploader = (buffer, filename, directory, mediaType, size) => {
   })
 }
 
+const deleteResource = (publicId) => {
+  return new Promise((resolve, reject) => {
+    cloudinary.uploader.destroy(
+      publicId,
+      { resource_type: 'image' },
+      (error, result) => result ? resolve(result) : reject(error)
+    )
+  })
+}
+
 module.exports = {
   cloudinary,
   bufferToStream,
@@ -58,6 +68,7 @@ module.exports = {
   getPdfDirPath,
   getPicturePublicId,
   getPictureUrl,
-  getPdfUrl,
+  getDownloadablePdfUrl,
   cloudinaryUploader,
+  deleteResource,
 }

@@ -3,10 +3,8 @@ const sizeOf = require('buffer-image-size');
 const sharp = require('sharp');
 const fetch = require('node-fetch');
 const getStream = require('get-stream');
-const { cloudinaryUploader, getPdfDirPath, getPdfUrl } = require('../utils/cloudinary');
-const { randomNumberGenerator } = require('../utils/utility-functions');
 
-const pdfBuilder = async (urls, userId, estateId) => {
+const pdfBuilder = async (urls) => {
   
   const pdf = new PDFDocument ({
     size: 'A4',
@@ -44,12 +42,7 @@ const pdfBuilder = async (urls, userId, estateId) => {
 
   const pdfBuffer = await getStream.buffer(pdf);
   console.log(pdfBuffer);
-  const filename = `listing-presentation-${randomNumberGenerator()}`;
-
-  await cloudinaryUploader(pdfBuffer, filename, getPdfDirPath(userId, estateId), 'pdf')
-  const cloudUrl = getPdfUrl(userId, estateId, filename)
-  console.log('pdf sent to client...');
-  return(cloudUrl)
+  return(pdfBuffer)
 }
 
 module.exports = pdfBuilder;

@@ -176,7 +176,7 @@ const listingHandler = knex => (req, res) => {
         .onConflict('contract_id')
         .merge()
         .returning('*')
-        .catch(err => {throw new Error (`Error trying to insert into contracts: ${err}`)})
+        .catch(err => {throw new Error (`Error trying to insert into contracts: ${err}`)}) 
 
         console.log('contractData:', contractData);
 
