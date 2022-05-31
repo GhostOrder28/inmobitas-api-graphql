@@ -37,10 +37,13 @@ const cloudinaryUnsignedUploader = (image, preset) => {
   })
 }
 
+const pxToMm = (px, dpi) => ((px * 25.4) / dpi)
+
 module.exports = {
   strParseIn,
   strParseOut,
   randomNumberGenerator,
   suffixGenerator,
   cloudinaryUnsignedUploader,
+  pxToMm,
 }
