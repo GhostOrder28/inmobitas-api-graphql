@@ -7,5 +7,7 @@
 	"passwordsMustMatch": "Passwords must match.",
 	"clientNameRequired": "Client name is required",
 	"clientContactPhoneRequired": "Client contact phone is required.",
-	"districtRequired": "District is required."
+	"districtRequired": "District is required.",
+	"bookAnAppointment": "Would you like to book an appointment?",
+	"contactMeAt": "Contact me at:"
 }

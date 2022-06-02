@@ -3,13 +3,17 @@ const sizeOf = require('buffer-image-size');
 const sharp = require('sharp');
 const fetch = require('node-fetch');
 const getStream = require('get-stream');
+const { strParseOut } = require('../utils/utility-functions');
 
-const pdfBuilder = async (urls) => {
-  
+const pdfBuilder = async (urls, userData, contactMessage) => {
+ 
   const pdf = new PDFDocument ({
     size: 'A4',
     autoFirstPage: false,
   });
+  
+  pdf
+    .font('assets/Montserrat-SemiBold.ttf')
 
   for (const url of urls) {
     const res = await fetch(url);
@@ -38,10 +42,41 @@ const pdfBuilder = async (urls) => {
       })    
   }
 
+  if (userData.contact_phone) {
+    pdf
+      .addPage({
+        layout: 'portrait',
+        margins: {
+          top: 300,
+          right: 0,
+          bottom: 0,
+          left: 0
+        }
+      })
+      .fontSize(20)
+      .text(contactMessage.bookAnAppointment, {
+        align: 'center',
+        lineGap: 10
+      })
+      .fontSize(28)
+      .text(contactMessage.contactMeAt, {
+        align: 'center',
+        lineGap: 10
+      })
+      .fontSize(28)
+      .text(userData.contact_phone, {
+        align: 'center',
+        lineGap: 10
+      })
+      .fontSize(28)
+      .text(strParseOut(userData.names), {
+        align: 'center'
+      })
+  }
+
   pdf.end();
 
   const pdfBuffer = await getStream.buffer(pdf);
-  console.log(pdfBuffer);
   return(pdfBuffer)
 }
 
