@@ -36,7 +36,7 @@ const getPictureUrl = (userId, estateId, filename, size) =>
   `${uploadPath}${getPicturesDirPath(userId, estateId, size)}/${filename}_${size}.webp`
 
 const getDownloadablePdfUrl = (publicId, filename) =>
-  `${uploadPath}/fl_attachment:${filename}/${publicId}.pdf`
+  `${uploadPath}/${publicId}.pdf`
 
 const cloudinaryUploader = (buffer, filename, directory, mediaType, size) => {
   return new Promise((resolve, reject) => {

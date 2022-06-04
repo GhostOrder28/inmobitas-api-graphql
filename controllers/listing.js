@@ -37,6 +37,7 @@ const listingHandler = knex => (req, res) => {
   } = req.body;
 
   const { userid, clientid, estateid, contractid } = req.params;
+  const clientData = null;
 
   const validationSchema = Joi.object({
     clientName: Joi.string().pattern(/^[a-zA-Z\s]+$/).required()
@@ -115,11 +116,23 @@ const listingHandler = knex => (req, res) => {
   console.log('LOGGING data sent from frontend:');
   console.log(req.body);
 
+  
+
   (async function () {
     try {
+
       await knex.transaction(async trx => {
 
-        const clientData = await trx.insert({
+        const existingOwner = await trx.select('*')
+          .from('clients')
+          .where('user_id', '=', userid)
+          .andWhere('name', '=', strParseIn(clientName))
+          .returning('*')
+        
+        console.log('ownerExists: ', Boolean(existingOwner.length));
+        console.log('owner: ', existingOwner);
+
+        const clientData = existingOwner.length ? existingOwner : await trx.insert({
           ... clientid ? { client_id: clientid } : {},
           user_id: userid,
           name: strParseIn(clientName),

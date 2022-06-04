@@ -10,15 +10,25 @@ const listingDataHandler = knex => (req, res) => {
 
     try {
 
+      const contractsSq = knex.select('*')
+        .from('contracts')
+        .where('estate_id', '=', estateid)
+        .as('c')
+
+      const estatesSq = knex.select('*')
+        .from('estates')
+        .where('estate_id', '=', estateid)
+        .as('e')
+
       const listingData = await knex('clients')
-      .join('estates', 'clients.client_id', 'estates.client_id')
-      .join('contracts', 'clients.client_id', 'contracts.client_id')
-      .leftJoin('features', 'estates.estate_id', 'features.estate_id')
-      .leftJoin('owner_preferences', 'estates.estate_id', 'owner_preferences.estate_id')
-      .select('*', 'estates.estate_id', 'clients.client_id', 'contracts.contract_id') // WARNING: selection order is important, otherwise the retuned null values from the left joins would overwrite the previous ones which are correct
-      .where('clients.user_id', '=', userid)
-      .andWhere('estates.estate_id', '=', estateid)
-      .returning('*');
+        .join(estatesSq, 'clients.client_id', 'e.client_id')
+        .join(contractsSq, 'clients.client_id', 'c.client_id')
+        .leftJoin('features', 'e.estate_id', 'features.estate_id')
+        .leftJoin('owner_preferences', 'e.estate_id', 'owner_preferences.estate_id')
+        .where('clients.user_id', '=', userid)
+        .andWhere('e.estate_id', '=', estateid)
+        .select('*', 'e.estate_id', 'clients.client_id', 'c.contract_id') // WARNING: selection order is important, otherwise the retuned null values from the left joins would overwrite the previous ones which are correct
+        .returning('*');
 
       console.log('listingData: ', listingData);
 

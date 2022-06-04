@@ -1,5 +1,5 @@
 const fs = require('fs-extra');
-const { strParseIn } = require('../utils/utility-functions');
+const { strParseIn, strParseOut } = require('../utils/utility-functions');
 
 const clientListingsHandler = knex => (req, res) => {
 
@@ -11,14 +11,13 @@ const clientListingsHandler = knex => (req, res) => {
     try {
 
       const clientListings = await knex('estates')
-      .join('contracts', 'estates.client_id', 'contracts.client_id')
+      .join('contracts', 'estates.estate_id', 'contracts.estate_id')
+      .select('estates.estate_id', 'district', 'neighborhood', 'contracts.estate_price', 'currency_type_id')
       .where('estates.user_id', '=', userId)
       .andWhere('estates.client_id', '=', clientId)
-      .select('estates.estate_id', 'district', 'neighborhood', 'contracts.estate_price', 'currency_type_id')
       .returning('*');
 
-      console.log('--------------- LOGGING: clientListings');
-      console.log(clientListings);
+      console.log('clientListings: ', clientListings);
 
       const currency_types = await knex.select('*')
       .from('currency_types')
@@ -29,8 +28,8 @@ const clientListingsHandler = knex => (req, res) => {
 
       const dbPayload = clientListings.map(listing => ({
         estateId: listing.estate_id,
-        district: listing.district,
-        neighborhood: listing.neighborhood,
+        district: strParseOut(listing.district),
+        neighborhood: strParseOut(listing.neighborhood),
         estatePrice: listing.estate_price,
         currencySymbol: currency_types.find(currency => currency.currency_type_id === listing.currency_type_id).currency_symbol,
       }));

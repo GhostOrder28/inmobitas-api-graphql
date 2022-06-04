@@ -2,7 +2,7 @@ const cloudinary = require('cloudinary').v2;
 
 const strParseIn = str => {
   if (str) {
-    return str.replaceAll(' ', '-').toLowerCase();
+    return str.trim().replaceAll(' ', '-').toLowerCase();
   } else {
     return null
   }
