@@ -16,6 +16,15 @@ const strParseOut = str => {
   }
 };
 
+const capFirst = str => {
+  if (str) {
+    const string = `${str.charAt(0).toUpperCase()}${str.substring(1)}`;
+    return string.replaceAll('-', ' ');
+  } else {
+    return null;
+  }
+}
+
 const randomNumberGenerator = () => {
   return Date.now() + '-' + Math.round(Math.random() * 1E9)
 };
@@ -42,6 +51,7 @@ const pxToMm = (px, dpi) => ((px * 25.4) / dpi)
 module.exports = {
   strParseIn,
   strParseOut,
+  capFirst,
   randomNumberGenerator,
   suffixGenerator,
   cloudinaryUnsignedUploader,

@@ -6,6 +6,7 @@
 	"lettersSpacesAndSpecialCharactersOnlyAllowed": "Caracter inválido, solo se permite letras, espacio y los caractéres .,:;",
 	"passwordsMustMatch": "Ambas contraseñas deben coincidir.",
 	"clientNameRequired": "El nombre del cliente es requerido",
+	"titleRequired": "El título del evento es requerido",
 	"clientContactPhoneRequired": "Teléfono de contacto del cliente es requerido.",
 	"districtRequired": "El distrito es requerido.",
 	"bookAnAppointment": "¿Te gustaría agendar una visita?",

@@ -34,6 +34,8 @@ const estatePictures = require('./controllers/estate-pictures');
 const deletePictures = require('./controllers/delete-pictures');
 const getDocument = require('./controllers/get-document')
 const deleteDocument = require('./controllers/delete-document');
+const event = require('./controllers/event');
+const events = require('./controllers/events');
 
 app.use(express.static(path.join(__dirname, "public")));
 app.use(express.json({limit: '50mb'}));
@@ -52,10 +54,12 @@ app.get('/listings/:userid/:clientid', clientListings.clientListingsHandler(knex
 app.get('/listingformdata', listingFormData.listingFormDataHandler(knex))
 app.get('/estatepictures/:userid/:estateid', estatePictures.estatePicturesHandler(knex))
 app.get('/genpdf/:userid/:estateid', getDocument.getDocumentHandler(knex))
+app.get('/events/:userid/:currentmonth/:currentyear', events.eventsHandler(knex))
 app.post('/newlisting/:userid', listing.listingHandler(knex))
 app.post('/signup', signUp.signUpHandler(knex))
 app.post('/signin', signIn.signInHandler(knex))
 app.post('/upload/:userid/:estateid', uploadMiddleware.single('file'), uploadFile.uploadFileHandler(knex))
+app.post('/event/:userid', event.eventHandler(knex))
 app.put('/editlisting/:userid/:clientid/:estateid/:contractid', listing.listingHandler(knex))
 app.delete('/deletepicture/:userid/:estateid/:pictureid', deletePictures.deletePicturesHandler(knex)) 
 app.delete('/deletedocument/:userid/:estateid', deleteDocument.deleteDocumentHandler(knex))

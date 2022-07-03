@@ -42,7 +42,7 @@ const pdfBuilder = async (urls, userData, contactMessage) => {
       })    
   }
 
-  if (userData.contact_phone) {
+  /*if (userData.contact_phone) {
     pdf
       .addPage({
         layout: 'portrait',
@@ -72,7 +72,7 @@ const pdfBuilder = async (urls, userData, contactMessage) => {
       .text(strParseOut(userData.names), {
         align: 'center'
       })
-  }
+  }*/
 
   pdf.end();
 
