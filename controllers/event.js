@@ -3,7 +3,7 @@ const Joi = require('joi');
 
 const eventHandler = knex => (req, res) => {
 
-  const { userid } = req.params;
+  const { userid, eventid } = req.params;
   const {
     title,
     startDate,
@@ -16,7 +16,7 @@ const eventHandler = knex => (req, res) => {
       'any.required': req.t('titleRequired')
     }),
     startDate: Joi.date().required(),
-    endDate: Joi.date(),
+    endDate: Joi.date().allow(null),
   })
 
   const { error, value } = validationSchema.validate({
@@ -32,12 +32,15 @@ const eventHandler = knex => (req, res) => {
   (async function () {
     try {
       const eventData = await knex.insert({
+        ... eventid ? { event_id: eventid } : {},
         user_id: userid,
         title: strParseIn(title), 
         start_date: startDate,
         end_date: endDate || null,
       })
         .into('events')
+        .onConflict('event_id')
+        .merge()
         .returning('*')
       
       console.log('eventData: ', eventData);
