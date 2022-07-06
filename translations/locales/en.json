@@ -10,5 +10,7 @@
 	"clientContactPhoneRequired": "Client contact phone is required.",
 	"districtRequired": "District is required.",
 	"bookAnAppointment": "Would you like to book an appointment?",
-	"contactMeAt": "Contact me at:"
+	"contactMeAt": "Contact me at:",
+	"notVerifiedMessage1": "Your account is not verified.",
+	"notVerifiedMessage2": "Unverified accounts can upload up to 6 images per listing only."
 }

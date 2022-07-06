@@ -6,7 +6,7 @@ const todayEventsHandler = knex => (req, res) => {
     const eventsData = await knex.select('*')
       .from('events')
       .where('user_id', '=', userid)
-      .andWhere(knex.raw(`start_date >= now()::date and start_date < current_date::timestamp + interval '1 day'`))
+      .andWhere(knex.raw(`start_date >= now()::timestamp and start_date < current_date::timestamp + interval '1 day'`))
       .orderBy('start_date')
       .returning('*');
 

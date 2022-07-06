@@ -38,6 +38,7 @@ const event = require('./controllers/event');
 const events = require('./controllers/events');
 const deleteEvent = require('./controllers/delete-event');
 const todayEvents = require('./controllers/today-events');
+const checkVerifiedUser = require('./controllers/check-verified-user');
 
 app.use(express.static(path.join(__dirname, "public")));
 app.use(express.json({limit: '50mb'}));
@@ -58,6 +59,7 @@ app.get('/estatepictures/:userid/:estateid', estatePictures.estatePicturesHandle
 app.get('/genpdf/:userid/:estateid', getDocument.getDocumentHandler(knex));
 app.get('/events/:userid/:currentmonth/:currentyear', events.eventsHandler(knex));
 app.get('/todayevents/:userid', todayEvents.todayEventsHandler(knex));
+app.get('/checkverified/:userid/:estateid/:uploadquantity', checkVerifiedUser.checkVerifiedUserHanlder(knex));
 app.post('/newlisting/:userid', listing.listingHandler(knex));
 app.post('/signup', signUp.signUpHandler(knex));
 app.post('/signin', signIn.signInHandler(knex));

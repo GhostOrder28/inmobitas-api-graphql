@@ -10,5 +10,7 @@
 	"clientContactPhoneRequired": "Teléfono de contacto del cliente es requerido.",
 	"districtRequired": "El distrito es requerido.",
 	"bookAnAppointment": "¿Te gustaría agendar una visita?",
-	"contactMeAt": "Contáctame al:"
+	"contactMeAt": "Contáctame al:",
+	"notVerifiedMessage1": "Tu cuenta no esta verificada.",
+	"notVerifiedMessage2": "Las cuentas no verificadas solo pueden subir hasta 6 imágenes por propiedad."
 }
