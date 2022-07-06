@@ -58,7 +58,7 @@ app.get('/listingformdata', listingFormData.listingFormDataHandler(knex));
 app.get('/estatepictures/:userid/:estateid', estatePictures.estatePicturesHandler(knex));
 app.get('/genpdf/:userid/:estateid', getDocument.getDocumentHandler(knex));
 app.get('/events/:userid/:currentmonth/:currentyear', events.eventsHandler(knex));
-app.get('/todayevents/:userid', todayEvents.todayEventsHandler(knex));
+app.get('/todayevents/:userid/:clientnow', todayEvents.todayEventsHandler(knex));
 app.get('/checkverified/:userid/:estateid/:uploadquantity', checkVerifiedUser.checkVerifiedUserHanlder(knex));
 app.post('/newlisting/:userid', listing.listingHandler(knex));
 app.post('/signup', signUp.signUpHandler(knex));
