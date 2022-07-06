@@ -40,21 +40,21 @@ const listingHandler = knex => (req, res) => {
   const clientData = null;
 
   const validationSchema = Joi.object({
-    clientName: Joi.string().pattern(/^[a-zA-Z\s]+$/).required()
+    clientName: Joi.string().pattern(/^[a-zA-ZñÑáéíóúüÁÉÍÓÚ\s]+$/i).required()
     .messages({
       'string.pattern.base': req.t('lettersAndSpacesOnlyAllowed'),
       'any.required': req.t('clientNameRequired')
     }),
     clientContactPhone: Joi.number().required()
     .messages({ 'any.required': req.t('clientContactPhoneRequired') }),
-    district: Joi.string().pattern(/^[a-zA-Z\s]+$/).required()
+    district: Joi.string().pattern(/^[a-zA-ZñÑáéíóúüÁÉÍÓÚ\s]+$/i).required() 
     .messages({
       'string.pattern.base': req.t('lettersAndSpacesOnlyAllowed'),
       'any.required': req.t('districtRequired') 
     }),
-    neighborhood: Joi.string().pattern(/^[a-zA-Z\s]+$/).allow(null)
+    neighborhood: Joi.string().pattern(/^[0-9a-zA-ZñÑáéíóúüÁÉÍÓÚ\s]+$/i).allow(null)
     .messages({ 'string.pattern.base': req.t('lettersAndSpacesOnlyAllowed') }),
-    addressDetails: Joi.string().pattern(/^[a-zA-Z0-9\.\:\;\,\s]+$/).allow(null)
+    addressDetails: Joi.string().pattern(/^[0-9a-zA-ZñÑáéíóúüÁÉÍÓÚ\.\:\;\,\s]+$/).allow(null)
     .messages({ 'string.pattern.base': req.t('lettersSpacesAndSpecialCharactersOnlyAllowed') }),
     contractTypeId: Joi.number().required(),
     currencyTypeId: Joi.number().required(),
@@ -69,13 +69,13 @@ const listingHandler = knex => (req, res) => {
     numberOfBathrooms: Joi.number().allow(null),
     numberOfGarages: Joi.number().allow(null),
     numberOfKitchens: Joi.number().allow(null),
-    estateDetails: Joi.string().pattern(/^[a-zA-Z0-9\.\:\;\,\s]+$/).allow(null)
+    estateDetails: Joi.string().pattern(/^[0-9a-zA-ZñÑáéíóúüÁÉÍÓÚ\.\:\;\,\s]+$/).allow(null)
     .messages({ 'string.pattern.base': req.t('lettersSpacesAndSpecialCharactersOnlyAllowed') }),
     fee: Joi.number().allow(null),
     signedDate: Joi.date().allow(null),
     startDate: Joi.date().allow(null),
     endDate: Joi.date().allow(null),
-    ownerPreferencesDetails: Joi.string().pattern(/^[a-zA-Z0-9\.\:\;\,\s]+$/).allow(null)
+    ownerPreferencesDetails: Joi.string().pattern(/^[0-9a-zA-ZñÑáéíóúüÁÉÍÓÚ\.\:\;\,\s]+$/).allow(null)
     .messages({ 'string.pattern.base': req.t('lettersSpacesAndSpecialCharactersOnlyAllowed') }),
   });
 

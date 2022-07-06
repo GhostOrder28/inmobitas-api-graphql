@@ -11,7 +11,7 @@ const eventHandler = knex => (req, res) => {
   } = req.body;
 
   const validationSchema = Joi.object({
-    title: Joi.string().pattern(/^[a-zA-Z\s0-9]+$/).required()
+    title: Joi.string().pattern(/^[0-9a-zA-ZñÑáéíóúüÁÉÍÓÚ\.\:\;\,\s]+$/).required()
     .messages({
       'any.required': req.t('titleRequired')
     }),
