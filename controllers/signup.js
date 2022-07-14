@@ -53,7 +53,7 @@ const signUpHandler = knex => (req, res) => {
       .into('users')
       .returning('*')
 
-      res.status(200).json({ userId: newUser[0].user_id, names, email, contactPhone })
+      res.status(200).json({ email, password })
 
     } catch (err) {
       if (err.code === UNIQUE_VIOLATION && err.constraint === 'agents_email_key') {
