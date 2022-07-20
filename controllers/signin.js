@@ -26,6 +26,8 @@ const signInHandler = knex => (req, res) => {
       .from('users')
       .where('email', '=', strParseIn(email))
       .returning('*')
+      
+      console.log('getUserData: ', getUserData[0])
 
       if (!getUserData.length) return res.status(400).json({ authErrors: req.t('wrongCredentials')})
       userId = getUserData[0].user_id;

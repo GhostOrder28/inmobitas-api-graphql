@@ -2,7 +2,7 @@ const fs = require('fs-extra');
 const { strParseIn, strParseOut } = require('../utils/utility-functions');
 const Joi = require('joi');
 
-const listingHandler = knex => (req, res) => {
+const postListing = knex => (req, res) => {
 
   const {
     clientName,
@@ -306,5 +306,5 @@ const listingHandler = knex => (req, res) => {
 };
 
 module.exports = {
-  listingHandler
+  postListing
 }

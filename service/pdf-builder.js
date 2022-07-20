@@ -1,4 +1,5 @@
 const PDFDocument = require('pdfkit');
+const toArrayBuffer = require('to-arraybuffer')
 const sizeOf = require('buffer-image-size');
 const sharp = require('sharp');
 const fetch = require('node-fetch');
@@ -11,7 +12,7 @@ const pdfBuilder = async (urls, userData, contactMessage) => {
     size: 'A4',
     autoFirstPage: false,
   });
-  
+  pdf.info['Title'] = 'Test Document'; 
   pdf
     .font('assets/Montserrat-SemiBold.ttf')
 
@@ -77,7 +78,7 @@ const pdfBuilder = async (urls, userData, contactMessage) => {
   pdf.end();
 
   const pdfBuffer = await getStream.buffer(pdf);
-  return(pdfBuffer)
+  return pdfBuffer
 }
 
 module.exports = pdfBuilder;

@@ -4,7 +4,6 @@ const { strParseOut } = require('../utils/utility-functions');
 const listingsHandler = knex => (req, res) => {
 
   const userId = req.params.userid;
-  console.log(req.params);
 
   (async function () {
 
@@ -17,36 +16,10 @@ const listingsHandler = knex => (req, res) => {
       .where('estates.user_id', '=', userId)
       .returning('*');
 
-      // console.log('--------------- LOGGING: listingsData');
-      // console.log(listingsData);
-
-      const currency_types = await knex.select('*')
-      .from('currency_types')
-      .returning('*')
-
-      // console.log('--------------- LOGGING: currency_types');
-      // console.log(currency_types);
-
-      const contractTypes = await knex.select('*')
-      .from('contract_types')
-      .returning('*')
-
-      // console.log('--------------- LOGGING: contractTypes');
-      // console.log(contractTypes);
-
-      const estateTypes = await knex.select('*')
-      .from('estate_types')
-      .returning('*')
-
-      // console.log('--------------- LOGGING: estateTypes');
-      // console.log(estateTypes);
-
       const dbPayload = listingsData.map(listing => ({
         estateId: listing.estate_id,
         district: listing.district && strParseOut(listing.district),
         neighborhood: listing.neighborhood && strParseOut(listing.neighborhood),
-        currencySymbol: currency_types.find(currency => currency.currency_type_id === listing.currency_type_id).currency_symbol,
-        estatePrice: listing.estate_price,
       }))
 
       console.log('--------------- LOGGING: dbPayload');

@@ -1,7 +1,4 @@
-const fs = require('fs-extra');
-const { strParseIn } = require('../utils/utility-functions');
-
-const clientsHandler = knex => (req, res) => {
+const getClientsList = knex => (req, res) => {
 
   const userId = req.params.userid;
 
@@ -14,8 +11,7 @@ const clientsHandler = knex => (req, res) => {
       .where('clients.user_id', '=', userId)
       .returning('*');
 
-      console.log('--------------- LOGGING: clientsData');
-      console.log(clientsData);
+      console.log('clientsData: ', clientsData);
 
       const dbPayload = clientsData.map(client => ({
         clientId: client.client_id,
@@ -33,5 +29,5 @@ const clientsHandler = knex => (req, res) => {
 }
 
 module.exports = {
-  clientsHandler
+  getClientsList
 }

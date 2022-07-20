@@ -1,10 +1,9 @@
-const fs = require('fs-extra');
 const types = require('pg').types;
 types.setTypeParser(20, function(value){
   return parseInt(value, 10)
 })
 
-const clientDataHandler = knex => (req, res) => {
+const getClient = knex => (req, res) => {
 
   const userId = req.params.userid;
   const clientId = req.params.clientid;
@@ -43,5 +42,5 @@ const clientDataHandler = knex => (req, res) => {
 }
 
 module.exports = {
-  clientDataHandler
+  getClient
 }

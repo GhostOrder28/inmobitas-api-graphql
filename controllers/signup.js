@@ -17,11 +17,11 @@ const signUpHandler = knex => (req, res) => {
   } = req.body;
 
   const validationSchema = Joi.object({
-    names: Joi.string().pattern(/^[a-zA-Z\s]+$/).max(50).required()
+    names: Joi.string().pattern(/^[0-9a-zA-ZñÑáéíóúüÁÉÍÓÚ\s]+$/).max(50).required()
       .messages({ 'string.pattern.base': req.t('lettersOnlyAllowed') }),
     email: Joi.string().email().required(),
     contactPhone: Joi.number(),
-    password: Joi.string().alphanum().strip().required(),
+    password: Joi.string().pattern(/^[0-9a-zA-ZñÑáéíóúüÁÉÍÓÚ\.\:\;\,\s]+$/).strip().required(),
     confirmPassword: Joi.any().valid(Joi.ref('password'))
       .messages({ 'any.only': req.t('passwordsMustMatch') })
   });
@@ -52,6 +52,8 @@ const signUpHandler = knex => (req, res) => {
       })
       .into('users')
       .returning('*')
+
+      console.log('newUser: ', newUser);
 
       res.status(200).json({ email, password })
 

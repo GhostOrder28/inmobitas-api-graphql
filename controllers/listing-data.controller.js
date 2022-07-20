@@ -1,10 +1,17 @@
 const fs = require('fs-extra');
 const { strParseIn, strParseOut } = require('../utils/utility-functions');
+const {
+  validateEstateId
+} = require('../knex/knex-validators');
 
-const listingDataHandler = knex => (req, res) => {
+const getListing = knex => async (req, res) => {
 
   const { userid, estateid } = req.params;
-  console.log(`userid ${userid}`, `estateid ${estateid}`);
+
+  const estateExists = await validateEstateId(estateid)
+  if (!estateExists) {
+    return res.status(400).json({ error: "the estate doesn't exists, make sure you are on a listing page" }) 
+  } 
 
   (async function () {
 
@@ -72,7 +79,7 @@ const listingDataHandler = knex => (req, res) => {
       
       res.status(200).json(dbPayload)
     } catch (err) {
-      throw new Error(err)
+      return res.status(400).json({ error: err.message });
     }
 
   })()
@@ -80,5 +87,5 @@ const listingDataHandler = knex => (req, res) => {
 }
 
 module.exports = {
-  listingDataHandler
+  getListing
 }
