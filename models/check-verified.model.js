@@ -1,33 +1,32 @@
+async function getTotalPicturesNumber (knex, params) {
+  const { userid, estateid, uploadquantity } = params;
+
+  const uploadedImagesQuantity = await knex.select('*')
+    .from('pictures')
+    .where('user_id', '=', userid)
+    .andWhere('estate_id', '=', estateid)
+    .returning('*')
+  
+  const totalPictures = uploadedImagesQuantity.length +  Number(uploadquantity);
+  return totalPictures;
+}
+
 async function checkVerifiedUser (knex, params) {
-
-const { userid, estateid, uploadquantity } = params;
-
-  try {
-    const uploadedImagesQuantity = await knex.select('*')
-      .from('pictures')
-      .where('user_id', '=', userid)
-      .andWhere('estate_id', '=', estateid)
-      .returning('*')
-    
-    console.log('uploadedImagesQuantity: ', uploadedImagesQuantity.length); 
-
-    const totalPictures = uploadedImagesQuantity.length +  Number(uploadquantity);
-
-    if (totalPictures > 6) {
-      const isVerified = await knex.select('verified')
+  const { userid } = params;
+    try {
+      const verificationCheck = await knex.select('verified')
         .from('users')
         .where('user_id', '=', userid)
         .returning('*')
-
-      console.log('is user verified? ', isVerified[0].verified)
-      return isVerified[0].verified;
+      
+      const isVerified = verificationCheck[0].verified;
+      return isVerified;
+    } catch  {
+      throw new Error(error) 
     }
-
-  } catch (error) {
-    throw new Error(error) 
-  }
 }
 
 module.exports = {
+  getTotalPicturesNumber,
   checkVerifiedUser
 }
