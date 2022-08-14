@@ -29,6 +29,7 @@ async function getAllPictures (knex, params) {
 
       return formattedPictures;
     } catch (err) {
+      console.log('asassasass');
       throw new Error(err)
     }
 }

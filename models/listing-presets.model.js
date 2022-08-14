@@ -7,19 +7,19 @@ async function getListingPresets (knex, clientLang) {
     .from('estate_types')
     .returning('*');
 
-    console.log('estateTypes: ', estateTypes);
+    //console.log('estateTypes: ', estateTypes);
 
     const contractTypes = await knex.select('*')
     .from('contract_types')
     .returning('*');
 
-    console.log('contractTypes: ', contractTypes);
+    //console.log('contractTypes: ', contractTypes);
 
     const currencyTypes = await knex.select('*')
     .from('currency_types')
     .returning('*');
 
-    console.log('currencyTypes: ', currencyTypes);
+    //console.log('currencyTypes: ', currencyTypes);
 
     const formattedListingPresets = {
       estateTypes: estateTypes.map(estate => ({
@@ -37,7 +37,7 @@ async function getListingPresets (knex, clientLang) {
       }))
     };
 
-    console.log('formattedListingPresets: ', formattedListingPresets);
+    //console.log('formattedListingPresets: ', formattedListingPresets);
 
     return formattedListingPresets;
   } catch (err) {

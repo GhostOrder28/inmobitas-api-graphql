@@ -1,7 +1,7 @@
 const bcrypt = require('bcrypt');
 
 const { signin } = require('../../models/signin.model');
-const { signinValidationSchema } = require('../../joi/auth-validation.schemas');
+const { signinValidationSchema } = require('../../joi/auth-validation.schema');
 
 function httpSignin (knex) {
   return async (req, res) => {

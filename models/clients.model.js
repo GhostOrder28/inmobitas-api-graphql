@@ -1,7 +1,32 @@
 const types = require('pg').types;
+console.log(types);
 types.setTypeParser(20, function(value){
   return parseInt(value, 10)
 })
+const { strParseOut } = require('../utils/utility-functions');
+
+function getClientDetailStructure (client) {
+  return {
+    clientId: client.client_id,
+    ownerStructuredData: [
+      { clientName: client.name },
+      { clientContactPhone: client.contact_phone },
+      { age: client.age },
+      { clientDetails: client.client_details }
+    ]
+  }
+}
+
+function getClientDataUnstructured (client) {
+  return {
+    clientId: client.client_id,
+    clientName: strParseOut(client.name),
+    clientContactPhone: client.contact_phone,
+    clientAge: client.age,
+    clientDetails: client.client_details,
+    clientType: client.client_type
+  }
+}
 
 async function getOneClient (knex, params) {
   const { userid, clientid } = params;
@@ -13,18 +38,10 @@ async function getOneClient (knex, params) {
     .andWhere('clients.client_id', '=', clientid)
     .returning('*');
 
-    const formattedClient = {
-      clientId: client[0].client_id,
-      clientName: client[0].name,
-      clientContactPhone: client[0].contact_phone,
-      clientAge: client[0].age,
-      clientType: client[0].client_type,
-      clientDetails: client[0].client_details,
-    }
+    const clientUnstructuredData = getClientDataUnstructured(client[0])
+    console.log('clientUnstructuredData: ', clientUnstructuredData);
 
-    console.log('formattedClient: ', formattedClient);
-
-    return formattedClient;
+    return clientUnstructuredData;
 
   } catch (err) {
     throw new Error(err)
@@ -41,9 +58,8 @@ async function getAllClients (knex, params) {
 
     const formattedClients = clients.map(client => ({
       clientId: client.client_id,
-      clientName: client.name,
+      clientName: strParseOut(client.name),
       clientContactPhone: client.contact_phone,
-      clientType: client.client_type,
     }))
 
     console.log('formattedClients: ', formattedClients);
@@ -55,8 +71,62 @@ async function getAllClients (knex, params) {
   }
 }
 
+async function updateOneClient (knex, params, clientData, t, clientLang) {
+  const { userid, clientid } = params;
+  const {
+    clientName,
+    clientContactPhone,
+    clientAge,
+    clientDetails,
+    clientType
+  } = clientData;
+  try {
+    const updatedClient = await knex.insert({
+      client_id: clientid,
+      user_id: userid,
+      name: clientName,
+      contact_phone: clientContactPhone,
+      age: clientAge,
+      client_details: clientDetails,
+      client_type: clientType
+    })
+      .into('clients')
+      .where('clients.user_id', '=', userid)
+      .onConflict('client_id')
+      .merge()
+      .returning('*');
+
+    const clientUnstructuredData = getClientDataUnstructured(updatedClient[0]);
+    return clientUnstructuredData;
+  } catch (error) {
+    console.log(error);
+    throw new Error(error)
+  }
+}
+
+async function deleteOneClient (knex, params) {
+  const { userid, clientid } = params;
+
+  try {
+  const deletedClient = await knex('clients')
+    .where('user_id', '=', userid)
+    .andWhere('client_id', '=', clientid)
+    .del()
+    .returning('*')
+
+  console.log('deletedClient: ', deletedClient);
+
+  return deletedClient[0].client_id;
+
+  } catch (error) {
+    console.log(error)
+    throw new Error({ error });
+  }
+}
 
 module.exports = {
   getOneClient,
   getAllClients,
+  updateOneClient,
+  deleteOneClient
 }

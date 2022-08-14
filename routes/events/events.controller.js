@@ -5,7 +5,7 @@ const {
   deleteEvent,
 } = require('../../models/events.model');
 
-const { eventValidationSchema } = require('../../joi/events-validation.schemas');
+const { eventValidationSchema } = require('../../joi/events-validation.schema');
 
 function httpGetEventsFromCurrentMonth (knex) {
   return async (req, res) => {
