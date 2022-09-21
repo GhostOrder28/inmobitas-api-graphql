@@ -37,6 +37,8 @@ const corsOptions = {
   credentials: true
 }
 
+console.log('origin: ', corsOptions.origin);
+
 passport.use(new GoogleStrategy(googleAuth.AUTH_OPTIONS, googleAuth.verifyCallback));
 passport.use(new LocalStrategy(localAuth.AUTH_OPTIONS, localAuth.verifyCallback));
 passport.serializeUser((user, done) => {
