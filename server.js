@@ -80,13 +80,13 @@ app.use((err, req, res, next) => res.sendStatus(500));
 const PORT = process.env.PORT || 3001;
 
 if (process.env.NODE_ENV === 'production') {
-  http.createServer().listen(PORT, () => { console.log(`Listening to port ${PORT}`) });
+  http.createServer(app).listen(PORT, () => { console.log(`Http server listening to port ${PORT}`) });
 } else {
   https.createServer({
     key: fs.readFileSync('key.pem'),
     cert: fs.readFileSync('cert.pem')
   }, app).listen(PORT, () => {
-    console.log(`Listen to port ${PORT}...`);
+    console.log(`Https server listening to port ${PORT}...`);
   })
 }
 
