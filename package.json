@@ -40,10 +40,10 @@
     "pg-error-constants": "^1.0.0",
     "sharp": "^0.30.3",
     "to-arraybuffer": "^1.0.1",
-    "uuid": "^8.3.2"
+    "uuid": "^8.3.2",
+    "morgan": "^1.10.0"
   },
   "devDependencies": {
-    "morgan": "^1.10.0",
     "nodemon": "^2.0.15"
   }
 }
