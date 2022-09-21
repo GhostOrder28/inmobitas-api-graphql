@@ -1,5 +1,4 @@
 const types = require('pg').types;
-console.log(types);
 types.setTypeParser(20, function(value){
   return parseInt(value, 10)
 })

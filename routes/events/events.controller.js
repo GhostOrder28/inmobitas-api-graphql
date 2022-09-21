@@ -14,7 +14,7 @@ function httpGetEventsFromCurrentMonth (knex) {
       const currentMonthEvents = await getEventsFromCurrentMonth(knex, params);
       return res.status(200).json(currentMonthEvents);
     } catch (error) {
-      return res.status(400).json({ error }); 
+      throw new Error(`There is an error, ${error}`);
     }
   }
 
@@ -26,7 +26,7 @@ function httpGetTodayEvents (knex) {
       const todayEvents = await getTodayEvents(knex, params);
       return res.status(200).json(todayEvents);
     } catch (error) {
-      return res.status(400).json({ error }); 
+      throw new Error(`There is an error, ${error}`);
     }
   }
 }
@@ -39,11 +39,10 @@ function httpPostEvent (knex) {
       const { error } = eventValidationSchema(t).validate(eventData, { abortEarly: false })
       if (error) return res.status(400).json({ validationErrors: error.details });
 
-      console.log('no errors')
       const event = await postEvent(knex, params, eventData);
       return res.status(200).json(event);
     } catch (error) {
-      return res.status(400).json({ error }); 
+      throw new Error(`There is an error, ${error}`);
     }
   }
 }
@@ -54,7 +53,7 @@ function httpDeleteEvent (knex) {
       const deletedEvent = await deleteEvent(knex, params);
       return res.status(200).json(deletedEvent);
     } catch (error) {
-      return res.status(400).json({ error }); 
+      throw new Error(`There is an error, ${error}`);
     }
   }
 }

@@ -8,7 +8,7 @@ function httpGetPresentation (knex) {
       const pdfBuffer = await getPresentation(knex, params, t);
       return res.status(200).send(pdfBuffer)
     } catch (error) {
-      return res.status(400).json({ error });
+      throw new Error(`There is an error, ${error}`);
     }
   }
 }

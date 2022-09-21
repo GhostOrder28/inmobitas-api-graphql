@@ -11,7 +11,7 @@ function httpGetAllPictures (knex) {
       const pictures = await getAllPictures(knex, params);
       return res.status(200).json(pictures);
     } catch (error) {
-      return res.status(400).json({ error });
+      throw new Error(`There is an error, ${error}`);
     }
   }
 }
@@ -24,7 +24,7 @@ function httpPostPicture (knex) {
       const picture = await postPicture(knex, params, file);
       return res.status(200).json(picture);
     } catch (error) {
-      return res.status(400).json({ error });
+      throw new Error(`There is an error, ${error}`);
     }
   }
 }
@@ -36,7 +36,7 @@ function httpDeletePicture (knex) {
       const deletedPicture = await deletePicture(knex, params);
       return res.status(200).json(deletedPicture);
     } catch (error) {
-      return res.status(400).json({ error });
+      throw new Error(`There is an error, ${error}`);
     }
   }
 }

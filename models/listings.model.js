@@ -158,7 +158,7 @@ async function getAllListings (knex, params) {
 
     const listings = await knex('estates')
       .join('contracts', 'estates.estate_id', 'contracts.estate_id')
-      .select('estates.estate_id', 'district', 'neighborhood', 'contracts.estate_price', 'currency_type_id', 'estates.total_area', 'estates.built_area')
+      .select('estates.estate_id', 'estates.client_id', 'district', 'neighborhood', 'contracts.estate_price', 'currency_type_id', 'estates.total_area', 'estates.built_area')
       .where('estates.user_id', '=', userid)
       .modify(function (queryBuilder) {
         if (clientid) {
@@ -169,6 +169,7 @@ async function getAllListings (knex, params) {
 
     const formattedListings = listings.map(listing => ({
       estateId: listing.estate_id,
+      clientId: listing.client_id,
       district: strParseOut(listing.district),
       neighborhood: strParseOut(listing.neighborhood),
       totalArea: listing.total_area,

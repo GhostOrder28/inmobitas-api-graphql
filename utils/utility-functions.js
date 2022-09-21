@@ -48,6 +48,15 @@ const cloudinaryUnsignedUploader = (image, preset) => {
 
 const pxToMm = (px, dpi) => ((px * 25.4) / dpi)
 
+function formatDbResponse (obj) {
+  const keys = Object.keys(obj);
+  const formattedResponse = keys.reduce((acc, currentKey) => {
+    const camelCased = currentKey.replace(/\_([a-z])/g, function (g) { return g[1].toUpperCase() })
+    return { ...acc, [camelCased]: obj[currentKey] }
+  }, {});
+  return formattedResponse;
+}
+
 module.exports = {
   strParseIn,
   strParseOut,
@@ -56,4 +65,5 @@ module.exports = {
   suffixGenerator,
   cloudinaryUnsignedUploader,
   pxToMm,
+  formatDbResponse
 }
