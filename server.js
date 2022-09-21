@@ -1,4 +1,5 @@
 const https = require('https');
+const http = require('http');
 const fs = require('fs');
 const express = require('express');
 const path = require('node:path');
@@ -36,8 +37,6 @@ const corsOptions = {
   origin: process.env.NODE_ENV ===  'production' ? 'https://inmobitas-client.herokuapp.com' : 'http://localhost:3000',
   credentials: true
 }
-
-console.log('origin: ', corsOptions.origin);
 
 passport.use(new GoogleStrategy(googleAuth.AUTH_OPTIONS, googleAuth.verifyCallback));
 passport.use(new LocalStrategy(localAuth.AUTH_OPTIONS, localAuth.verifyCallback));
@@ -80,9 +79,14 @@ app.use((err, req, res, next) => res.sendStatus(500));
 
 const PORT = process.env.PORT || 3001;
 
-https.createServer({
-  key: fs.readFileSync('key.pem'),
-  cert: fs.readFileSync('cert.pem')
-}, app).listen(PORT, () => {
-  console.log(`Listen to port ${PORT}...`);
-})
+if (process.env.NODE_ENV === 'production') {
+  http.createServer().listen(PORT, () => { console.log(`Listening to port ${PORT}`) });
+} else {
+  https.createServer({
+    key: fs.readFileSync('key.pem'),
+    cert: fs.readFileSync('cert.pem')
+  }, app).listen(PORT, () => {
+    console.log(`Listen to port ${PORT}...`);
+  })
+}
+
