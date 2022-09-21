@@ -30,11 +30,12 @@ const eventsRouter = require('./routes/events/events.router');
 const listingPresetsRouter = require('./routes/listing-presets/listing-presets.router');
 const checkVerifiedRouter = require('./routes/check-verified/check-verified.router');
 const authRouter = require('./routes/auth/auth.router');
+const { clientBaseUrl } = require('./constants/urls');
 
 const googleAuth = require('./passport/google.passport');
 const localAuth = require('./passport/local.passport');
 const corsOptions = {
-  origin: process.env.NODE_ENV ===  'production' ? 'https://inmobitas-client.herokuapp.com' : 'http://localhost:3000',
+  origin: clientBaseUrl,
   credentials: true
 }
 

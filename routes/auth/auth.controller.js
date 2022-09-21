@@ -1,8 +1,10 @@
 const bcrypt = require('bcrypt');
-const { ValidationError } = require('../../errors/api-errors');
-const { AuthenticationError, DuplicateEntityError } = require('../../errors/db-errors');
-const { formatDbResponse } = require('../../utils/utility-functions');
 const passport = require('passport');
+
+const { ValidationError } = require('../../errors/api-errors');
+const { formatDbResponse } = require('../../utils/utility-functions');
+const { AuthenticationError, DuplicateEntityError } = require('../../errors/db-errors');
+const { clientBaseUrl } = require('../../constants/urls');
 
 const { 
   signup,
@@ -13,6 +15,7 @@ const {
   signinValidationSchema,
   signupValidationSchema
 } = require('../../joi/auth-validation.schema');
+
 
 function httpSignin () {
   return (req, res, next) => {
@@ -73,14 +76,12 @@ function httpSignout () {
 
 function httpSigninWithGoogle (knex) {
   return async (req, res) => {
-    console.log('Google called us back!');
-    console.log('req user: ', req.user);
     const dbUser = await findOneUser(knex, req.user.oAuthId);
     if (dbUser.length) {
-      return res.redirect('http://localhost:3000/signin')
+      return res.redirect(`${clientBaseUrl}/signin`)
     } else {
       const user = await signupWithGoogle(knex, req.user);
-      return res.redirect('http://localhost:3000/signin')
+      return res.redirect(`${clientBaseUrl}/signin`)
     }
   }
 }

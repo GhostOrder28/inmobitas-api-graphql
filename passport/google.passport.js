@@ -1,7 +1,8 @@
 const passport = require('passport');
+const { apiBaseUrl } = require('../constants/urls');
 
 const AUTH_OPTIONS = {
-  callbackURL: 'https://localhost:3001/auth/google/callback',
+  callbackURL: `${apiBaseUrl}/auth/google/callback`,
   clientID: process.env.GOOGLE_CLIENT_ID,
   clientSecret: process.env.GOOGLE_CLIENT_SECRET,
 }
