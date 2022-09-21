@@ -33,7 +33,7 @@ const authRouter = require('./routes/auth/auth.router');
 const googleAuth = require('./passport/google.passport');
 const localAuth = require('./passport/local.passport');
 const corsOptions = {
-  origin: 'http://localhost:3000',
+  origin: process.env.NODE_ENV ===  'production' ? 'https://inmobitas-client.herokuapp.com' : 'http://localhost:3000',
   credentials: true
 }
 
