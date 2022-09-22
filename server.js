@@ -39,6 +39,14 @@ const corsOptions = {
   credentials: true
 }
 
+function forceSsl (req, res, next) {
+  if (req.headers['x-forwarded-proto'] !== 'https' && process.env.NODE_ENV === 'production') {
+    console.log('is not https, forcing ssl...')
+    return res.redirect(['https://', req.get('host'), req.url].path.join(''))
+  }
+  return next();
+}
+
 passport.use(new GoogleStrategy(googleAuth.AUTH_OPTIONS, googleAuth.verifyCallback));
 passport.use(new LocalStrategy(localAuth.AUTH_OPTIONS, localAuth.verifyCallback));
 passport.serializeUser((user, done) => {
@@ -47,6 +55,7 @@ passport.serializeUser((user, done) => {
 passport.deserializeUser((id, done) => {
   done(null, id);
 });
+app.use(forceSsl);
 app.use(helmet());
 app.use(cookieSession({
   name: 'session',
