@@ -80,6 +80,9 @@ function httpSigninWithGoogle (knex) {
     const dbUser = await findOneUser(knex, req.user.oAuthId);
     if (dbUser.length) {
       console.log('user is already registered');
+      console.log('host: ', req.get('host'));
+      console.log('url: ', req.url);
+      console.log('forwarded-prop header: ', req.headers['x-forwarded-proto']);
       return res.redirect(`${clientBaseUrl}/signin`)
     } else {
       console.log('user is not registered');
