@@ -83,7 +83,8 @@ function httpSigninWithGoogle (knex) {
       console.log('host: ', req.get('host'));
       console.log('url: ', req.url);
       console.log('forwarded-prop header: ', req.headers['x-forwarded-proto']);
-      return res.redirect(`${clientBaseUrl}/signin`)
+      return res.redirect(`/`)
+      //return res.redirect(`${clientBaseUrl}/signin`)
     } else {
       console.log('user is not registered');
       const user = await signupWithGoogle(knex, req.user);
