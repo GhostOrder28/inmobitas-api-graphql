@@ -76,6 +76,7 @@ function httpSignout () {
 
 function httpSigninWithGoogle (knex) {
   return async (req, res) => {
+    console.log('sinning in with google...')
     const dbUser = await findOneUser(knex, req.user.oAuthId);
     if (dbUser.length) {
       return res.redirect(`${clientBaseUrl}/signin`)
