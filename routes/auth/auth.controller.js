@@ -80,7 +80,7 @@ function httpSigninWithGoogle (knex) {
     const dbUser = await findOneUser(knex, req.user.oAuthId);
     if (dbUser.length) {
       console.log('user is already registered');
-      return res.redirect(`${clientBaseUrl}/signin`)
+      return res.redirect(`${clientBaseUrl}/signup`)
     } else {
       console.log('user is not registered');
       const user = await signupWithGoogle(knex, req.user);
@@ -95,7 +95,6 @@ function httpGetUser (knex) {
       try {
         const dbUser = await findOneUser(knex, req.user.oAuthId);
         if (!dbUser.length) throw new AuthenticationError(req.t('wrongCredentials'));
-        console.log(dbUser.length)
         return res.status(200).json(formatDbResponse(dbUser[0]));
       } catch (error) {
         if (error instanceof AuthenticationError) return next(error);
