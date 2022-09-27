@@ -66,8 +66,10 @@ app.use(morgan('combined'));
 app.use(middleware.handle(i18next));
 app.use(enforce.HTTPS({ trustProtoHeader: true }))
 
-app.get('/test', (req, res) => console.log('testing!'));
 app.use('/auth', authRouter);
+app.get('/signin', function (req, res) {
+  res.sendFile(path.join(__dirname, "../public/index.html"));
+});
 app.use(checkLoggedIn)
 app.use('/listings', listingsRouter);
 app.use('/clients', clientRouter);
