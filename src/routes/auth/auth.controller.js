@@ -32,6 +32,7 @@ function httpSignin () {
         },
         function (err, user, info) {
           if (info) return next(new AuthenticationError(info.message));
+          console.log('user: ', user);
           req.login(user.userId, next);
           return res.status(200).json(user);
         }
