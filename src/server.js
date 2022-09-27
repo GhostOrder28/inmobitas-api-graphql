@@ -67,10 +67,7 @@ app.use(middleware.handle(i18next));
 app.use(enforce.HTTPS({ trustProtoHeader: true }))
 
 app.use('/auth', authRouter);
-//app.get('/signin', function (req, res) {
-  //res.sendFile(path.join(__dirname, "../public/index.html"));
-//});
-//app.use(checkLoggedIn)
+app.use(checkLoggedIn)
 app.use('/listings', listingsRouter);
 app.use('/clients', clientRouter);
 app.use('/pictures', picturesRouter);
