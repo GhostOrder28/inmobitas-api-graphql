@@ -2,9 +2,8 @@
   "name": "real-estate-management-app-api",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
   "scripts": {
-    "start": "node server.js",
+    "start": "node src/server.js",
     "dev": "nodemon server.js"
   },
   "author": "GhostOrder28",
@@ -20,6 +19,7 @@
     "cors": "^2.8.5",
     "dotenv": "^16.0.0",
     "express": "^4.17.3",
+    "express-sslify": "^1.2.0",
     "fs-extra": "^10.0.1",
     "get-stream": "^6.0.1",
     "helmet": "^6.0.0",
@@ -30,6 +30,7 @@
     "joi": "^17.6.0",
     "jspdf": "^2.5.1",
     "knex": "^1.0.3",
+    "morgan": "^1.10.0",
     "multer": "^1.4.4",
     "node-fetch": "2",
     "passport": "0.5",
@@ -40,8 +41,7 @@
     "pg-error-constants": "^1.0.0",
     "sharp": "^0.30.3",
     "to-arraybuffer": "^1.0.1",
-    "uuid": "^8.3.2",
-    "morgan": "^1.10.0"
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
     "nodemon": "^2.0.15"

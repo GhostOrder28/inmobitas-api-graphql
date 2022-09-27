@@ -2,7 +2,11 @@ const { strParseIn, strParseOut } = require('../utils/utility-functions');
 const { getListingPresets } = require('./listing-presets.model');
 
 async function getGroupedListingData (listing, presets, t) {
-  return [
+  return {
+    clientId: listing.client_id,
+    estateId: listing.estate_id,
+    contractId: listing.contract_id,
+    data: [
     {
       header: t('owner'),
       items: [
@@ -113,6 +117,7 @@ async function getGroupedListingData (listing, presets, t) {
       ]
     }
   ]
+  }
 }
 
 async function getUngroupedListingData (listing) {

@@ -71,16 +71,27 @@ async function signup (knex, signupData, t) {
   }
 }
 
-async function findOneUser (knex, oAuthId) {
-  try { 
-    const user = await knex('users_providers')
-      .join('users', 'users_providers.user_id', '=', 'users.user_id')
-      .where('users_providers.oauth_id', '=', oAuthId)
-      .select('users.user_id', 'users.names', 'users_providers.oauth_id')
-      .returning('*');
+async function findOneUser (knex, userId, isOAuth) {
+  console.log('incomming user id: ', userId);
+  console.log('is auth?', isOAuth)
+  try {
+    let user;
+    if (isOAuth) {
+      user = await knex('users_providers')
+        .join('users', 'users_providers.user_id', '=', 'users.user_id')
+        .where('users_providers.oauth_id', '=', userId)
+        .select('users.user_id', 'users.names', 'users_providers.oauth_id')
+        .returning('*');
 
-    console.log('user: ', user);
+      console.log('user: ', user);
+    } else {
+      user = await knex.select('names', 'user_id')
+        .from('users')
+        .where('user_id', '=', userId)
+        .returning('*');
 
+      console.log('user: ', user);
+    }
     return user;
   } catch (error) {
     throw new Error(`We coudn't find the user, reason: ${error}`);

@@ -69,27 +69,27 @@ function httpSignup (knex) {
 
 function httpSignout () {
   return async (req, res) => {
+    req.session = null;
     await req.logout();
+    console.log('session: ', req.session);
     return res.send('success!');
   }
 }
 
 function httpSigninWithGoogle (knex) {
   return async (req, res) => {
-    console.log('sinning in with google...')
-    const dbUser = await findOneUser(knex, req.user.oAuthId);
-    if (dbUser.length) {
-      console.log('user is already registered');
-      console.log('host: ', req.get('host'));
-      console.log('url: ', req.url);
-      console.log('forwarded-prop header: ', req.headers['x-forwarded-proto']);
-      return res.redirect(`${clientBaseUrl}`)
-      //return res.redirect(`${clientBaseUrl}/signin`)
-    } else {
-      console.log('user is not registered');
-      const user = await signupWithGoogle(knex, req.user);
-      return res.redirect(`${clientBaseUrl}/signin`)
-    }
+    return res.redirect(`${clientBaseUrl}`)
+    //console.log('sinning in with google...')
+    //const dbUser = await findOneUser(knex, req.user.oAuthId, true);
+    //if (dbUser.length) {
+      ////return res.redirect(`${clientBaseUrl}/signin`)
+      //return res.redirect(`${clientBaseUrl}`)
+    //} else {
+      //console.log('user is not registered');
+      //const user = await signupWithGoogle(knex, req.user);
+      ////return res.redirect(`${clientBaseUrl}/signin`)
+      //return res.redirect(`${clientBaseUrl}`)
+    //}
   }
 }
 
@@ -97,7 +97,8 @@ function httpGetUser (knex) {
   return async (req, res, next) => {
     if (req.user) {
       try {
-        const dbUser = await findOneUser(knex, req.user.oAuthId);
+        const dbUser = await findOneUser(knex, req.user);
+        console.log('dbUser', dbUser)
         if (!dbUser.length) throw new AuthenticationError(req.t('wrongCredentials'));
         return res.status(200).json(formatDbResponse(dbUser[0]));
       } catch (error) {
