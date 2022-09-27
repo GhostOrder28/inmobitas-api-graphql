@@ -84,9 +84,3 @@ app.use((err, req, res, next) => res.sendStatus(500));
 
 const PORT = process.env.PORT || 3001;
 http.createServer(app).listen(PORT, () => { console.log(`Listening to port ${PORT}`) })
-https.createServer({
-  key: fs.readFileSync('src/key.pem'),
-  cert: fs.readFileSync('src/cert.pem')
-}, app).listen(PORT, () => {
-  console.log(`Https server listening to port ${PORT}...`);
-})
