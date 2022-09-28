@@ -20,6 +20,7 @@ async function verifyCallback (req, username, password, done) {
     if (!signinData) throw new AuthenticationError(req.t('wrongCredentials'));
 
     const match = await bcrypt.compare(password, signinData.password);
+    console.log('log after compare')
     if (match) {
       const user = {
         userId: signinData.user_id,
