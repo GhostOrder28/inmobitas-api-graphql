@@ -51,7 +51,7 @@ const corsOptions = {
 const cookieSessionOptions = {
   name: 'session',
   sameSite: 'none',
-  //secure: true,
+  secure: true,
   maxAge: 24 * 60 * 60 * 1000,
   keys: [ process.env.COOKIE_KEY_1, process.env.COOKIE_KEY_2 ]
 }
