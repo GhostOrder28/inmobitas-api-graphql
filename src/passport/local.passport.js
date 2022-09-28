@@ -24,7 +24,8 @@ async function verifyCallback (req, username, password, done) {
       const user = {
         userId: signinData.user_id,
         names: signinData.names,
-      } 
+      }
+      console.log('user credentials matched! info being sent to passport.authenticate callback: ', user)
       return done(null, user);
     } else {
       throw new AuthenticationError(req.t('wrongCredentials'))
