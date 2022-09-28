@@ -37,7 +37,8 @@ const localAuth = require('./passport/local.passport');
 
 //options
 const corsOptions = {
-  origin: 'https://localhost:3000',
+  origin: 'https://inmobitas.herokuapp.com',
+  //origin: 'https://localhost:3001',
   credentials: true,
 }
 const cookieSessionOptions = {
