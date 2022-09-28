@@ -36,8 +36,8 @@ async function verifyCallback (req, username, password, done) {
       error instanceof AuthenticationError ||
       error instanceof ValidationError 
     ) return done(null, false, error);
-    //throw new Error(error);
-    return done(error);
+    throw new Error(error);
+    //return done(error);
   }
 }
 
