@@ -4,8 +4,9 @@ const { DuplicateEntityError } = require('../errors/db-errors');
 const { formatDbResponse } = require('../utils/utility-functions');
 
 async function signin (knex, userEmail) {
-
+  
   try {
+    console.log('selecting info from users table...')
     const userProfileData = await knex.select('user_id', 'email', 'names')
       .from('users')
       .where('email', '=', strParseIn(userEmail))
@@ -25,6 +26,7 @@ async function signin (knex, userEmail) {
     const userData = { ...userProfileData[0], ...userCredentials[0] }
     return userData;
   } catch (error) {
+    console.log('there is an error when trying to select users or userCredentials tables');
     throw new Error(error);
   }
 }
