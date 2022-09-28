@@ -35,37 +35,52 @@ const authRouter = require('./routes/auth/auth.router');
 const googleAuth = require('./passport/google.passport');
 const localAuth = require('./passport/local.passport');
 
+//options
+const corsOptions = {
+  origin: 'http://localhost:3000',
+  credentials: true,
+}
+const cookieSessionOptions = {
+  name: 'session',
+  sameSite: 'none',
+  //secure: true,
+  maxAge: 24 * 60 * 60 * 1000,
+  keys: [ process.env.COOKIE_KEY_1, process.env.COOKIE_KEY_2 ]
+}
+const helmetOptions = {
+  contentSecurityPolicy: false
+}
+const urlencodedOptions = {
+  limit: '50mb',
+  extended: false
+}
+
+//passport
 passport.use(new GoogleStrategy(googleAuth.AUTH_OPTIONS, googleAuth.verifyCallback));
 passport.use(new LocalStrategy(localAuth.AUTH_OPTIONS, localAuth.verifyCallback));
 passport.serializeUser((user, done) => {
+  console.log('serializing user: ', user)
   done(null, user);
 });
 passport.deserializeUser((id, done) => {
-  done(null, id);
+  console.log('deserializing user: ', id)
+  done(null, id); 
 });
-app.use(helmet({
-  contentSecurityPolicy: false
-}));
-//app.use(cors(corsOptions));
-app.use(cookieSession({
-  name: 'session',
-  sameSite: 'none',
-  secure: true,
-  maxAge: 24 * 60 * 60 * 1000,
-  keys: [ process.env.COOKIE_KEY_1, process.env.COOKIE_KEY_2 ]
-}));
+
+//middelwares
+//app.use(helmet(helmetOptions));
+app.use(cors(corsOptions));
+app.use(cookieSession(cookieSessionOptions));
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(express.static(path.join(__dirname, "..", "public")));
 app.use(express.json({limit: '50mb'}));
-app.use(express.urlencoded({
-  limit: '50mb',
-  extended: false
-}));
+app.use(express.urlencoded(urlencodedOptions));
 app.use(morgan('combined'));
 app.use(middleware.handle(i18next));
-app.use(enforce.HTTPS({ trustProtoHeader: true }))
+//app.use(enforce.HTTPS({ trustProtoHeader: true }))
 
+//routes
 app.use('/auth', authRouter);
 app.use(checkLoggedIn)
 app.use('/listings', listingsRouter);
@@ -79,10 +94,10 @@ app.get('/*', function (req, res) {
   res.sendFile(path.join(__dirname, "../public/index.html"));
 });
 app.get('/service-worker.js', (req, res) => {
-	res.sendFile(path.resolve(__dirname, '..', 'build', 'service-worker.js'));
+  res.sendFile(path.resolve(__dirname, '..', 'public', 'service-worker.js'));
 });
 app.use(errorHandler);
-app.use((err, req, res, next) => res.sendStatus(500));
+//app.use((err, req, res, next) => res.sendStatus(500));
 
 const PORT = process.env.PORT || 3001;
 http.createServer(app).listen(PORT, () => { console.log(`Listening to port ${PORT}`) })

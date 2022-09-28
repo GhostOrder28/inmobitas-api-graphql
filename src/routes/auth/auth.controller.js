@@ -32,6 +32,7 @@ function httpSignin () {
         },
         function (err, user, info) {
           if (info) return next(new AuthenticationError(info.message));
+          if (!user) throw new Error('user is not defined');
           console.log('user: ', user);
           req.login(user.userId, next);
           return res.status(200).json(user);
@@ -70,7 +71,7 @@ function httpSignup (knex) {
 
 function httpSignout () {
   return async (req, res) => {
-    req.session = null;
+    //req.session = null;
     await req.logout();
     console.log('session: ', req.session);
     return res.send('success!');
