@@ -27,7 +27,7 @@ async function signin (knex, userEmail) {
     return userData;
   } catch (error) {
     console.log('there is an error when trying to select users or userCredentials tables');
-    throw new Error(error);
+    new Error(error);
   }
 }
 
