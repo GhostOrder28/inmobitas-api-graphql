@@ -35,6 +35,13 @@ const authRouter = require('./routes/auth/auth.router');
 const googleAuth = require('./passport/google.passport');
 const localAuth = require('./passport/local.passport');
 
+//server
+//const server = http.createServer(app);
+//const server = https.createServer({
+  //cert: fs.readFileSync(`${path.resolve()}/src/cert.pem`),
+  //key: fs.readFileSync(`${path.resolve()}/src/key.pem`)
+//}, app);
+
 //options
 const corsOptions = {
   origin: 'https://inmobitas.herokuapp.com',
@@ -44,7 +51,7 @@ const corsOptions = {
 const cookieSessionOptions = {
   name: 'session',
   sameSite: 'none',
-  secure: true,
+  //secure: true,
   maxAge: 24 * 60 * 60 * 1000,
   keys: [ process.env.COOKIE_KEY_1, process.env.COOKIE_KEY_2 ]
 }
@@ -101,4 +108,4 @@ app.use(errorHandler);
 //app.use((err, req, res, next) => res.sendStatus(500));
 
 const PORT = process.env.PORT || 3001;
-http.createServer(app).listen(PORT, () => { console.log(`Listening to port ${PORT}`) })
+app.listen(PORT, () => { console.log(`Listening to port ${PORT}`) });
