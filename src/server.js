@@ -67,19 +67,19 @@ const urlencodedOptions = {
 //passport
 passport.use(new GoogleStrategy(googleAuth.AUTH_OPTIONS, googleAuth.verifyCallback));
 passport.use(new LocalStrategy(localAuth.AUTH_OPTIONS, localAuth.verifyCallback));
-//passport.serializeUser((user, done) => {
-  //console.log('serializing user: ', user)
-  //done(null, user);
-//});
-//passport.deserializeUser((id, done) => {
-  //console.log('deserializing user: ', id)
-  //done(null, id); 
-//});
+passport.serializeUser((user, done) => {
+  console.log('serializing user: ', user)
+  done(null, user);
+});
+passport.deserializeUser((id, done) => {
+  console.log('deserializing user: ', id)
+  done(null, id); 
+});
 
 //middelwares
-//app.use(helmet(helmetOptions));
+app.use(helmet(helmetOptions));
 app.use(cors(corsOptions));
-//app.use(cookieSession(cookieSessionOptions));
+app.use(cookieSession(cookieSessionOptions));
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(express.static(path.join(__dirname, "..", "public")));
@@ -91,8 +91,7 @@ app.use(middleware.handle(i18next));
 
 //routes
 app.use('/auth', authRouter);
-//app.get('auth/google', (req, res) => { console.log('singing with google...') });
-//app.use(checkLoggedIn);
+app.use(checkLoggedIn);
 app.use('/listings', listingsRouter);
 app.use('/clients', clientRouter);
 app.use('/pictures', picturesRouter);
@@ -103,9 +102,9 @@ app.use('/checkverified', checkVerifiedRouter);
 app.get('/*', function (req, res) {
   res.sendFile(path.join(__dirname, "../public/index.html"));
 });
-//app.get('/service-worker.js', (req, res) => {
-  //res.sendFile(path.resolve(__dirname, '..', 'public', 'service-worker.js'));
-//});
+app.get('/service-worker.js', (req, res) => {
+  res.sendFile(path.resolve(__dirname, '..', 'public', 'service-worker.js'));
+});
 app.use(errorHandler);
 //app.use((err, req, res, next) => res.sendStatus(500));
 
