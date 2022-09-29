@@ -11,7 +11,6 @@ const AUTH_OPTIONS = {
 
 async function verifyCallback (accessToken, refreshToken, profile, done) {
   console.log('veryfing signing in with google...');
-  let user;
   const userData = {
     oAuthId: profile.id,
     names: profile._json.name,
@@ -22,7 +21,7 @@ async function verifyCallback (accessToken, refreshToken, profile, done) {
     done(null, dbUser[0].user_id);
   } else {
     console.log('user is not registered');
-    const newUser = await signupWithGoogle(knex, user);
+    const newUser = await signupWithGoogle(knex, userData);
     done(null, newUser[0].user_id);
   }
   //console.log('google profile: ', profile);
