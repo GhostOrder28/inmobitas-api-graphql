@@ -90,7 +90,7 @@ app.use(middleware.handle(i18next));
 
 //routes
 app.use('/auth', authRouter);
-//app.use(checkLoggedIn)
+app.use(checkLoggedIn)
 app.use('/listings', listingsRouter);
 app.use('/clients', clientRouter);
 app.use('/pictures', picturesRouter);
