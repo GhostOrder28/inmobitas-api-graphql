@@ -10,7 +10,7 @@ const AUTH_OPTIONS = {
 }
 
 async function verifyCallback (accessToken, refreshToken, profile, done) {
-  console.log('sinning in with google...');
+  console.log('veryfing sinning in with google...');
   let user;
   const userData = {
     oAuthId: profile.id,
