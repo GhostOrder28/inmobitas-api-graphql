@@ -77,7 +77,7 @@ passport.deserializeUser((id, done) => {
 });
 
 //middelwares
-app.use(helmet(helmetOptions));
+//app.use(helmet(helmetOptions));
 app.use(cors(corsOptions));
 app.use(cookieSession(cookieSessionOptions));
 app.use(passport.initialize());
