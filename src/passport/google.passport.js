@@ -22,7 +22,7 @@ async function verifyCallback (accessToken, refreshToken, profile, done) {
   } else {
     console.log('user is not registered');
     const newUser = await signupWithGoogle(knex, userData);
-    done(null, newUser[0].user_id);
+    done(null, newUser[0].userId);
   }
   //console.log('google profile: ', profile);
 }
