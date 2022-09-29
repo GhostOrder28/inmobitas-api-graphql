@@ -9,7 +9,7 @@ i18next
   .init({
     preload: ['en', 'es'],
     backend: {
-      loadPath: join('./translations/locales', '{{lng}}.json')
+      loadPath: join('./translations/locales', '{{lng}}', '{{ns}}.json')
     }
   })
 

@@ -1,7 +1,7 @@
 const { strParseIn, strParseOut } = require('../utils/utility-functions');
 const { getListingPresets } = require('./listing-presets.model');
 
-async function getGroupedListingData (listing, presets, t) {
+function getGroupedListingData (listing, presets, t) {
   return {
     clientId: listing.client_id,
     estateId: listing.estate_id,
@@ -217,8 +217,9 @@ async function getOneListing (knex, params, t, clientLang) {
 
     if (group) {
       const listingPresets = await getListingPresets(knex, clientLang);
+      console.log('translator: ', t)
       const groupedListing = getGroupedListingData(listing[0], listingPresets, t);
-      console.log('groupedListing: ', groupedListing);
+      console.log('groupedListing: ------------------------', groupedListing);
       return groupedListing;
     } else {
       const ungroupListing = getUngroupedListingData(listing[0]);
