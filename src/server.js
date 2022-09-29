@@ -89,8 +89,9 @@ app.use(middleware.handle(i18next));
 //app.use(enforce.HTTPS({ trustProtoHeader: true }))
 
 //routes
-app.use('/auth', authRouter);
-app.use(checkLoggedIn)
+//app.use('/auth', authRouter);
+app.get('auth/google', (req, res) => { console.log('singing with google...') });
+app.use(checkLoggedIn);
 app.use('/listings', listingsRouter);
 app.use('/clients', clientRouter);
 app.use('/pictures', picturesRouter);
