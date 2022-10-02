@@ -1,4 +1,4 @@
-//const clientBaseUrl = 'https://localhost:3001';
+//const clientBaseUrl = 'https://localhost:3000';
 const clientBaseUrl = 'https://inmobitas.herokuapp.com';
 //const apiBaseUrl = 'https://localhost:3001';
 const apiBaseUrl = 'https://inmobitas.herokuapp.com';
