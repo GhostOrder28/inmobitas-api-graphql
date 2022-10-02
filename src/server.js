@@ -59,8 +59,8 @@ const cookieSessionOptions = {
 const helmetOptions = {
   contentSecurityPolicy: {
     directives: {
-      'default-src': ['self'],
-      'img-src': ['self', 'https://res.cloudinary.com'],
+      'default-src': ["'self'"],
+      'img-src': ["'self'", 'https://res.cloudinary.com'],
     }
   },
 }
