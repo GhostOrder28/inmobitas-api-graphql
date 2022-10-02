@@ -57,7 +57,11 @@ const cookieSessionOptions = {
   keys: [ process.env.COOKIE_KEY_1, process.env.COOKIE_KEY_2 ]
 }
 const helmetOptions = {
-  contentSecurityPolicy: false
+  contentSecurityPolicy: {
+    directives: {
+      'img-src': ['self', 'https://res.cloudinary.com'],
+    }
+  },
 }
 const urlencodedOptions = {
   limit: '50mb',
