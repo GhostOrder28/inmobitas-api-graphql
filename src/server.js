@@ -59,7 +59,7 @@ const cookieSessionOptions = {
 const helmetOptions = {
   contentSecurityPolicy: {
     directives: {
-      'default-src': ["'self'"],
+      'script-src': ["https://inmobitas.herokuapp.com"],
       'img-src': ["'self'", 'https://res.cloudinary.com'],
     }
   },
