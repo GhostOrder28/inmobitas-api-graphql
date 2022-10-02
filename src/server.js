@@ -60,6 +60,7 @@ const helmetOptions = {
   contentSecurityPolicy: {
     directives: {
       'default-src': ["'self'"],
+      'script-src': ["'self'"],
       'img-src': ["'self'", 'https://res.cloudinary.com'],
     }
   },
