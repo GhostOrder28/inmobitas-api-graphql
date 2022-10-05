@@ -95,6 +95,15 @@ app.use(middleware.handle(i18next));
 //app.use(enforce.HTTPS({ trustProtoHeader: true }))
 
 //routes
+//app.get('/test', (req, res) => {
+  //console.log('test endpoint reached!')
+//})
+//app.get('/testauth', (req, res) => {
+  //res.sendFile(path.join(__dirname, "../public/test.html"));
+//})
+//app.get('/testpage', (req, res) => {
+  //res.sendFile(path.join(__dirname, "../public/index.html"));
+//})
 app.use('/auth', authRouter);
 app.get('/signin', (req, res) => {
   res.sendFile(path.join(__dirname, "../public/index.html"));
@@ -114,6 +123,7 @@ app.get('/*', function (req, res) {
   res.sendFile(path.join(__dirname, "../public/index.html"));
 });
 app.get('/service-worker.js', (req, res) => {
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0');
   res.sendFile(path.resolve(__dirname, '..', 'public', 'service-worker.js'));
 });
 app.use(errorHandler);
