@@ -1,10 +1,9 @@
 const passport = require('passport');
-const { apiBaseUrl } = require('../constants/urls');
 const { signupWithGoogle, findOneUser } = require('../models/auth.model');
 const knex = require('../knex/knex-config');
 
 const AUTH_OPTIONS = {
-  callbackURL: `${apiBaseUrl}/auth/google/callback`,
+  callbackURL: `${process.env.API_BASE_URL}/auth/google/callback`,
   clientID: process.env.GOOGLE_CLIENT_ID,
   clientSecret: process.env.GOOGLE_CLIENT_SECRET,
 }

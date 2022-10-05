@@ -14,8 +14,7 @@ const authRouter = express.Router();
 
 authRouter.post('/signup', httpSignup(knex));
 authRouter.post('/signin', httpSignin());
-authRouter.get('/google', (req, res, next) => { console.log('signing with googleeeee...'); next(); }, passport.authenticate('google', { scope: ['profile', 'email'] }));
-//authRouter.get('/google', (req, res) => { console.log('signin with google!'); });
+authRouter.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
 authRouter.get('/google/callback',
   passport.authenticate('google', {
     failureRedirect: '/failure',

@@ -16,7 +16,6 @@ const cookieSession = require('cookie-session');
 const morgan = require('morgan');
 const { errorHandler } = require('./errors/error-handler');
 const { checkLoggedIn } = require('./middlewares/login.middlewares');
-const { clientBaseUrl } = require('./constants/urls');
 const types = require('pg').types;
 types.setTypeParser(1082, val => val);
 
@@ -45,7 +44,7 @@ const localAuth = require('./passport/local.passport');
 
 //options
 const corsOptions = {
-  origin: clientBaseUrl,
+  origin: process.env.CLIENT_BASE_URL,
   credentials: true,
 }
 const cookieSessionOptions = {

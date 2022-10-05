@@ -4,12 +4,10 @@ const passport = require('passport');
 const { ValidationError } = require('../../errors/api-errors');
 const { formatDbResponse } = require('../../utils/utility-functions');
 const { AuthenticationError, DuplicateEntityError } = require('../../errors/db-errors');
-const { clientBaseUrl } = require('../../constants/urls');
 
 const { 
   signup,
   findOneUser,
-  signupWithGoogle,
 } = require('../../models/auth.model');
 const { 
   signinValidationSchema,
@@ -81,18 +79,7 @@ function httpSignout () {
 
 function httpSigninWithGoogle (knex) {
   return async (req, res) => {
-    return res.redirect(`${clientBaseUrl}`)
-    //console.log('sinning in with google...')
-    //const dbUser = await findOneUser(knex, req.user.oAuthId, true);
-    //if (dbUser.length) {
-      ////return res.redirect(`${clientBaseUrl}/signin`)
-      //return res.redirect(`${clientBaseUrl}`)
-    //} else {
-      //console.log('user is not registered');
-      //const user = await signupWithGoogle(knex, req.user);
-      ////return res.redirect(`${clientBaseUrl}/signin`)
-      //return res.redirect(`${clientBaseUrl}`)
-    //}
+    return res.redirect(process.env.CLIENT_BASE_URL);
   }
 }
 
