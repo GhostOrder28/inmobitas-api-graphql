@@ -35,8 +35,6 @@ const authRouter = require('./routes/auth/auth.router');
 const googleAuth = require('./passport/google.passport');
 const localAuth = require('./passport/local.passport');
 
-//server
-//const server = http.createServer(app);
 //const server = https.createServer({
   //cert: fs.readFileSync(`${path.resolve()}/src/cert.pem`),
   //key: fs.readFileSync(`${path.resolve()}/src/key.pem`)
@@ -81,7 +79,7 @@ passport.deserializeUser((id, done) => {
 });
 
 //middelwares
-//app.use(helmet(helmetOptions));
+app.use(helmet(helmetOptions));
 app.use(cors(corsOptions));
 app.use(cookieSession(cookieSessionOptions));
 app.use(passport.initialize());
@@ -94,15 +92,6 @@ app.use(middleware.handle(i18next));
 //app.use(enforce.HTTPS({ trustProtoHeader: true }))
 
 //routes
-//app.get('/test', (req, res) => {
-  //console.log('test endpoint reached!')
-//})
-//app.get('/testauth', (req, res) => {
-  //res.sendFile(path.join(__dirname, "../public/test.html"));
-//})
-//app.get('/testpage', (req, res) => {
-  //res.sendFile(path.join(__dirname, "../public/index.html"));
-//})
 app.use('/auth', authRouter);
 app.get('/signin', (req, res) => {
   res.sendFile(path.join(__dirname, "../public/index.html"));
