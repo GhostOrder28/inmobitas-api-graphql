@@ -5,16 +5,18 @@ const sharp = require('sharp');
 const fetch = require('node-fetch');
 const getStream = require('get-stream');
 const { strParseOut } = require('../utils/utility-functions');
+const fs = require('fs-extra');
+const path = require('node:path');
 
 const pdfBuilder = async (urls, userData, contactMessage) => {
- 
+  console.log('dirname: ', __dirname) 
   const pdf = new PDFDocument ({
     size: 'A4',
     autoFirstPage: false,
   });
-  pdf.info['Title'] = 'Test Document'; 
+  pdf.info['Title'] = 'Listing'; 
   pdf
-    .font('assets/Montserrat-SemiBold.ttf')
+    .font(fs.readFileSync(path.join(__dirname, '..', 'assets', 'Montserrat-SemiBold.ttf')));
 
   for (const url of urls) {
     const res = await fetch(url);
