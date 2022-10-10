@@ -18,8 +18,9 @@ const {
 function httpSignin () {
   return (req, res, next) => {
     const { email, password } = req.body;
+    const t = req.t;
     try {
-      const { error } = signinValidationSchema.validate({ email, password }, { abortEarly: false });
+      const { error } = signinValidationSchema(req.t).validate({ email, password }, { abortEarly: false });
       if (error) throw new ValidationError('there is an error when validating user input', error.details);
 
       passport.authenticate(

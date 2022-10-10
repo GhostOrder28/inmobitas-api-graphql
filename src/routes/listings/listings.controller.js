@@ -43,13 +43,13 @@ function httpPostListing (knex) {
       const t = req.t;
       const clientLang = req.headers["accept-language"];
 
-      const { error } = listingValidationSchema(t, listingData.contractTypeId).validate(req.body, { abortEarly: false })
+      const { error } = listingValidationSchema(t, listingData.contractTypeId).validate(req.body, { abortEarly: false });
       if (error) throw new ValidationError('there is an error validating user input', error.details)
 
       const listing = await postListing(knex, params, listingData, t, clientLang);
       return res.status(200).json(listing);
     } catch (error) {
-      if (error instanceof ValidationError) next(error);
+      if (error instanceof ValidationError) return next(error);
       throw new Error(`There is an error, ${error}`);
     }
   }

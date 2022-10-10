@@ -1,6 +1,7 @@
 const Joi = require('joi');
 
 function listingValidationSchema (t, contractTypeId) {
+  console.log('t: ', t())
   return Joi.object({
     clientName: Joi.string().pattern(/^[a-zA-ZñÑáéíóúüÁÉÍÓÚ\s]+$/i).required()
     .messages({
