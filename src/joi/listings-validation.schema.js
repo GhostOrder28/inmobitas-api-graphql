@@ -20,9 +20,9 @@ function listingValidationSchema (t, contractTypeId) {
     addressDetails: Joi.string().pattern(/^[0-9a-zA-ZñÑáéíóúüÁÉÍÓÚ\.\:\;\,\s]+$/).allow(null)
     .messages({ 'string.pattern.base': t('lettersSpacesAndSpecialCharactersOnlyAllowed') }),
     contractTypeId: Joi.number().required(),
-    currencyTypeId: Joi.number().required(),
+    //currencyTypeId: Joi.number().required(),
     client_type: contractTypeId === 1 ? 'seller' : 'landlord',
-    estatePrice: Joi.number().allow(null),
+    //estatePrice: Joi.number().allow(null),
     estateTypeId: Joi.number().required(),
     floorLocation: Joi.number().allow(null),
     numberOfFloors: Joi.number().allow(null),
@@ -34,18 +34,18 @@ function listingValidationSchema (t, contractTypeId) {
     numberOfKitchens: Joi.number().allow(null),
     estateDetails: Joi.string().pattern(/^[0-9a-zA-ZñÑáéíóúüÁÉÍÓÚ\.\:\;\,\s]+$/).allow(null)
     .messages({ 'string.pattern.base': t('lettersSpacesAndSpecialCharactersOnlyAllowed') }),
-    fee: Joi.number().allow(null),
-    signedDate: Joi.date().allow(null),
-    startDate: Joi.date().allow(null),
-    endDate: Joi.date().allow(null),
+    //fee: Joi.number().allow(null),
+    //signedDate: Joi.date().allow(null),
+    //startDate: Joi.date().allow(null),
+    //endDate: Joi.date().allow(null),
     ownerPreferencesDetails: Joi.string().pattern(/^[0-9a-zA-ZñÑáéíóúüÁÉÍÓÚ\.\:\;\,\s]+$/).allow(null)
     .messages({ 'string.pattern.base': t('lettersSpacesAndSpecialCharactersOnlyAllowed') }),
-    isPercentage: Joi.boolean().allow(null),
+    //isPercentage: Joi.boolean().allow(null),
     isExclusive: Joi.boolean().allow(null),
     haveNaturalGas: Joi.boolean().allow(null),
     petsAllowed: Joi.boolean().allow(null),
     childrenAllowed: Joi.boolean().allow(null),
-    utilitiesIncluded: Joi.boolean().allow(null),
+    //utilitiesIncluded: Joi.boolean().allow(null),
   });
 }
 
