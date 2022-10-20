@@ -45,7 +45,6 @@ function httpSignin () {
     try {
       const { error } = signinValidationSchema(req.t).validate({ email, password }, { abortEarly: false });
       if (error) throw new ValidationError('there is an error when validating user input', error.details);
-      // can I extract this function to its own one? so I can reuse it in getGuest cntroller?
       getPassportMiddleware(userType, next)(req, res, next);
     } catch (error) {
       if (error instanceof ValidationError) return next(error);
@@ -65,7 +64,7 @@ function httpSignup (knex) {
       const saltRounds = 10;
       signupData.hashedPwd = await bcrypt.hash(signupData.password, saltRounds);
 
-      const signupResponse = await signup(knex, signupData, req.t);
+      const signupResponse = await signup(req.knexInstance, signupData, req.t);
       console.log('signupResponse: ', signupResponse);
       return res.status(200).json({ ...signupResponse, userType: 'normal' });
     } catch (error) {
@@ -113,11 +112,10 @@ function httpGetUser (knex) {
 
 function httpGetGuest (knex) {
   return async (req, res) => {
-    const { knexGuest } = knex;
     const signupData = await generateGuestUser();
     const t = req.t;
     const clientLang = req.headers["accept-language"];
-    const signupResponse = await signup(knexGuest, signupData, req.t);
+    const signupResponse = await signup(req.knexInstance, signupData, req.t);
     return res.status(200).json({ ...signupResponse, userType: 'guest' });
 
     //const listingData = await generateDummyListing();

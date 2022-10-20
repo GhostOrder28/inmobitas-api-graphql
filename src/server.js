@@ -16,6 +16,7 @@ const cookieSession = require('cookie-session');
 const morgan = require('morgan');
 const { errorHandler } = require('./errors/error-handler');
 const { checkLoggedIn } = require('./middlewares/login.middlewares');
+const { checkUserType } = require('./middlewares/user-type.middlewares');
 const types = require('pg').types;
 types.setTypeParser(1082, val => val);
 
@@ -92,6 +93,7 @@ app.use(middleware.handle(i18next));
 //app.use(enforce.HTTPS({ trustProtoHeader: true }))
 
 //routes
+app.use(checkUserType);
 app.use('/auth', authRouter);
 app.get('/signin', (req, res) => {
   res.sendFile(path.join(__dirname, "../public/index.html"));

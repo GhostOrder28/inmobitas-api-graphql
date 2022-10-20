@@ -14,6 +14,6 @@ const knexGuest = require('knex')({
 });
 
 module.exports = {
-  knexMain,
-  knexGuest
+  normal: knexMain,
+  guest: knexGuest
 }

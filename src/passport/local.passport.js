@@ -12,17 +12,11 @@ const AUTH_OPTIONS = {
 }
 
 async function verifyCallback (req, username, password, done) {
-  let knex;
   // username is email
   console.log('verify callback reached');
   try {
     console.log('req.body inside verifyCallback: ', req.body);
-    if (req.body.userType === 'guest') {
-      knex = knexGuest; 
-    } else {
-      knex = knexMain;
-    }
-    const signinData = await signin(knex, username);
+    const signinData = await signin(req.knexInstance, username);
 
     if (!signinData) throw new AuthenticationError(req.t('wrongCredentials'));
 
