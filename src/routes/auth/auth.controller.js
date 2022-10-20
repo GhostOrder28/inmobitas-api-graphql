@@ -9,35 +9,44 @@ const {
   signup,
   findOneUser,
 } = require('../../models/auth.model');
+const { postListing } = require('../../models/listings.model');
 const { 
   signinValidationSchema,
   signupValidationSchema
 } = require('../../joi/auth-validation.schema');
 
+const { generateDummyListing, generateGuestUser } = require('../../service/guest-generator');
+
+function getPassportMiddleware (userType, next) {
+  return passport.authenticate(
+    'local',
+    {
+      failureRedirect: '/failure',
+      session: true
+    },
+    function (err, user, info) {
+      if (err) throw new Error(err);
+      if (info) return next(new AuthenticationError(info.message));
+      if (!user) throw new Error('user is not defined');
+      const userIdentifier = {
+        userId: user.userId,
+        userType,
+      }
+      req.login(userIdentifier, next);
+      return res.status(200).json(user);
+    }
+  )
+}
 
 function httpSignin () {
   return (req, res, next) => {
-    const { email, password } = req.body;
+    const { email, password, userType } = req.body;
     const t = req.t;
     try {
       const { error } = signinValidationSchema(req.t).validate({ email, password }, { abortEarly: false });
       if (error) throw new ValidationError('there is an error when validating user input', error.details);
-
-      passport.authenticate(
-        'local',
-        {
-          failureRedirect: '/failure',
-          session: true
-        },
-        function (err, user, info) {
-          if (err) throw new Error(err);
-          if (info) return next(new AuthenticationError(info.message));
-          if (!user) throw new Error('user is not defined');
-          console.log('user: ', user);
-          req.login(user.userId, next);
-          return res.status(200).json(user);
-        }
-      )(req, res, next);
+      // can I extract this function to its own one? so I can reuse it in getGuest cntroller?
+      getPassportMiddleware(userType, next)(req, res, next);
     } catch (error) {
       if (error instanceof ValidationError) return next(error);
       throw new Error(`There is an error, ${error}`);
@@ -58,7 +67,7 @@ function httpSignup (knex) {
 
       const signupResponse = await signup(knex, signupData, req.t);
       console.log('signupResponse: ', signupResponse);
-      return res.status(200).json(signupResponse);
+      return res.status(200).json({ ...signupResponse, userType: 'normal' });
     } catch (error) {
       if (
         error instanceof ValidationError ||
@@ -102,10 +111,28 @@ function httpGetUser (knex) {
   }
 }
 
+function httpGetGuest (knex) {
+  return async (req, res) => {
+    const { knexGuest } = knex;
+    const signupData = await generateGuestUser();
+    const t = req.t;
+    const clientLang = req.headers["accept-language"];
+    const signupResponse = await signup(knexGuest, signupData, req.t);
+    return res.status(200).json({ ...signupResponse, userType: 'guest' });
+
+    //const listingData = await generateDummyListing();
+    //const listing = await postListing(knexGuest, { userid }, listingData, t, clientLang);
+    //console.log('guest user:', user);
+    //console.log('listing:', listing);
+    //res.status(200).json('guest generated succesfully!');
+  }
+}
+
 module.exports = {
   httpSignin,
   httpSignup,
   httpSignout,
   httpSigninWithGoogle,
   httpGetUser,
+  httpGetGuest,
 }

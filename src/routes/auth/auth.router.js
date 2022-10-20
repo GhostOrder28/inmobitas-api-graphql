@@ -8,6 +8,7 @@ const {
   httpSignout,
   httpSigninWithGoogle, 
   httpGetUser,
+  httpGetGuest,
 } = require('./auth.controller');
 
 const authRouter = express.Router();
@@ -24,5 +25,6 @@ authRouter.get('/google/callback',
 );
 authRouter.get('/getuser', httpGetUser(knex));
 authRouter.get('/signout', httpSignout());
+authRouter.get('/guest', httpGetGuest(knex));
 
 module.exports = authRouter;

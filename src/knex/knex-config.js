@@ -1,4 +1,4 @@
-const knex = require('knex')({
+const knexMain = require('knex')({
   client: 'pg',
   connection: process.env.POSTGRES_CONNECTION_STRING || {
     host : '127.0.0.1',
@@ -8,4 +8,12 @@ const knex = require('knex')({
   } 
 });
 
-module.exports = knex
+const knexGuest = require('knex')({
+  client: 'pg',
+  connection: process.env.POSTGRES_GUEST_CONNECTION_STRING
+});
+
+module.exports = {
+  knexMain,
+  knexGuest
+}

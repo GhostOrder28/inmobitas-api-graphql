@@ -1,4 +1,4 @@
-const knex = require('../knex/knex-config');
+const { knexMain, knexGuest } = require('../knex/knex-config');
 const bcrypt = require('bcrypt');
 const { ValidationError } = require('../errors/api-errors');
 const { AuthenticationError } = require('../errors/db-errors');
@@ -12,9 +12,16 @@ const AUTH_OPTIONS = {
 }
 
 async function verifyCallback (req, username, password, done) {
+  let knex;
   // username is email
   console.log('verify callback reached');
   try {
+    console.log('req.body inside verifyCallback: ', req.body);
+    if (req.body.userType === 'guest') {
+      knex = knexGuest; 
+    } else {
+      knex = knexMain;
+    }
     const signinData = await signin(knex, username);
 
     if (!signinData) throw new AuthenticationError(req.t('wrongCredentials'));
