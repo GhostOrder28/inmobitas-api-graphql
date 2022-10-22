@@ -1,4 +1,3 @@
-const { knexMain, knexGuest } = require('../knex/knex-config');
 const bcrypt = require('bcrypt');
 const { ValidationError } = require('../errors/api-errors');
 const { AuthenticationError } = require('../errors/db-errors');
@@ -15,20 +14,19 @@ async function verifyCallback (req, username, password, done) {
   // username is email
   console.log('verify callback reached');
   try {
-    console.log('req.body inside verifyCallback: ', req.body);
     const signinData = await signin(req.knexInstance, username);
 
     if (!signinData) throw new AuthenticationError(req.t('wrongCredentials'));
-
+    
     const match = await bcrypt.compare(password, signinData.password);
-    console.log('log after compare')
+
     if (match) {
       const user = {
         userId: signinData.user_id,
         names: signinData.names,
       }
-      console.log('user credentials matched! info being sent to passport.authenticate callback: ', user)
-      return done(null, user);
+      console.log('user credentials matched! info being sent to passport.authenticate callback: ', user);
+      done(null, user);
     } else {
       throw new AuthenticationError(req.t('wrongCredentials'))
     }

@@ -9,7 +9,7 @@ async function signin (knex, userEmail) {
     console.log('selecting info from users table...')
     const userProfileData = await knex.select('user_id', 'email', 'names')
       .from('users')
-      .where('email', '=', strParseIn(userEmail))
+      .where('email', '=', userEmail)
       .returning('*');
 
     console.log('userProfileData: ', userProfileData);

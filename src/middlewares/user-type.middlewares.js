@@ -1,16 +1,23 @@
 const { knexGuest, knexMain } = require('../knex/knex-config');
 
 function checkUserType (req, res, next) {
-  const userType = req.user.userType;
+  console.log('req.user: ', req.user);
+  console.log('req.body: ', req.body);
+
+  const userTypeInCookie = req.user?.userType || null;
+  const userTypeInBody = req.body.userType || null;
   console.log('checking user type...');
-  if (userType === 'guest') {
+
+  if (userTypeInCookie === 'guest' || userTypeInBody === 'guest') {
     console.log('user is guest');
     req.knexInstance = knexGuest;  
-  } else {
+  } else if (userTypeInCookie === 'normal' || userTypeInBody === 'normal'){
     console.log('user is normal')
     req.knexInstance = knexMain;
+  } else {
+    throw new Error('user type is neither guest nor normal');
   }
-  //next();
+  next();
 }
 
 module.exports = {

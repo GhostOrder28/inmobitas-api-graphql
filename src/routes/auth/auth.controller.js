@@ -14,6 +14,7 @@ const {
   signinValidationSchema,
   signupValidationSchema
 } = require('../../joi/auth-validation.schema');
+const { knexGuest, knexMain } = require('../../knex/knex-config');
 
 const { generateDummyListing, generateGuestUser } = require('../../service/guest-generator');
 
@@ -45,7 +46,25 @@ function httpSignin () {
     try {
       const { error } = signinValidationSchema(req.t).validate({ email, password }, { abortEarly: false });
       if (error) throw new ValidationError('there is an error when validating user input', error.details);
-      getPassportMiddleware(userType, next)(req, res, next);
+      //getPassportMiddleware(userType, next)(req, res, next);
+      passport.authenticate(
+        'local',
+        {
+          failureRedirect: '/failure',
+          session: true
+        },
+        function (err, user, info) {
+          if (err) throw new Error(err);
+          if (info) return next(new AuthenticationError(info.message));
+          if (!user) throw new Error('user is not defined');
+          const userIdentifier = {
+            userId: user.userId,
+            userType,
+          }
+          req.login(userIdentifier, next);
+          return res.status(200).json(user);
+        }
+      )(req, res, next);
     } catch (error) {
       if (error instanceof ValidationError) return next(error);
       throw new Error(`There is an error, ${error}`);
@@ -115,7 +134,8 @@ function httpGetGuest (knex) {
     const signupData = await generateGuestUser();
     const t = req.t;
     const clientLang = req.headers["accept-language"];
-    const signupResponse = await signup(req.knexInstance, signupData, req.t);
+    const signupResponse = await signup(knexGuest, signupData, req.t);
+    console.log('returning userData to client: ', { ...signupResponse, userType: 'guest'  })
     return res.status(200).json({ ...signupResponse, userType: 'guest' });
 
     //const listingData = await generateDummyListing();

@@ -10,11 +10,12 @@ const {
   httpGetUser,
   httpGetGuest,
 } = require('./auth.controller');
+const { checkUserType } = require('../../middlewares/user-type.middlewares');
 
 const authRouter = express.Router();
 
 authRouter.post('/signup', httpSignup(knex));
-authRouter.post('/signin', httpSignin());
+authRouter.post('/signin', checkUserType, httpSignin());
 authRouter.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
 authRouter.get('/google/callback',
   passport.authenticate('google', {

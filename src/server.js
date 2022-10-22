@@ -93,7 +93,6 @@ app.use(middleware.handle(i18next));
 //app.use(enforce.HTTPS({ trustProtoHeader: true }))
 
 //routes
-app.use(checkUserType);
 app.use('/auth', authRouter);
 app.get('/signin', (req, res) => {
   res.sendFile(path.join(__dirname, "../public/index.html"));
@@ -101,6 +100,7 @@ app.get('/signin', (req, res) => {
 app.get('/signup', (req, res) => {
   res.sendFile(path.join(__dirname, "../public/index.html"));
 });
+app.use(checkUserType);
 app.use(checkLoggedIn);
 app.use('/listings', listingsRouter);
 app.use('/clients', clientRouter);
