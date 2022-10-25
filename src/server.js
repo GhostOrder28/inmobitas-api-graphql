@@ -36,10 +36,10 @@ const authRouter = require('./routes/auth/auth.router');
 const googleAuth = require('./passport/google.passport');
 const localAuth = require('./passport/local.passport');
 
-const server = https.createServer({
-  cert: fs.readFileSync(`${path.resolve()}/src/cert.pem`),
-  key: fs.readFileSync(`${path.resolve()}/src/key.pem`)
-}, app);
+//const server = https.createServer({
+  //cert: fs.readFileSync(`${path.resolve()}/src/cert.pem`),
+  //key: fs.readFileSync(`${path.resolve()}/src/key.pem`)
+//}, app);
 
 //options
 const corsOptions = {
@@ -57,7 +57,6 @@ const cookieSessionOptions = {
 const helmetOptions = {
   contentSecurityPolicy: {
     directives: {
-      //'script-src': ["https://inmobitas.herokuapp.com"],
       'img-src': ["'self'", 'https://res.cloudinary.com'],
     }
   },
@@ -120,4 +119,4 @@ app.use(errorHandler);
 //app.use((err, req, res, next) => res.sendStatus(500));
 
 const PORT = process.env.PORT || 3001;
-server.listen(PORT, () => { console.log(`Listening to port ${PORT}`) });
+app.listen(PORT, () => { console.log(`Listening to port ${PORT}`) });

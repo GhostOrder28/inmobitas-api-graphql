@@ -14,7 +14,7 @@ async function getAllPictures (knex, params) {
   const { userid, estateid } = params;
 
     try {
-      const pictures = await knex.select('picture_id', 'filename', 'auto_generated')
+      const pictures = await knex.select('*')
         .from('pictures')
         .where('estate_id', '=', estateid)
         .returning('*');
