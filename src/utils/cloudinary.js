@@ -35,6 +35,9 @@ const getPicturePublicId = (userId, estateId, filename, size) =>
 const getPictureUrl = (userId, estateId, filename, size) => 
   `${uploadPath}${getPicturesDirPath(userId, estateId, size)}/${filename}_${size}.webp`
 
+const getGuestPictureUrl = (filename, size) =>
+  `${uploadPath}/inmobitas/u_guest/${size}/${filename}.webp`
+
 const getDownloadablePdfUrl = (publicId, filename) =>
   `${uploadPath}/${publicId}.pdf`
 
@@ -71,4 +74,5 @@ module.exports = {
   getDownloadablePdfUrl,
   cloudinaryUploader,
   deleteResource,
+  getGuestPictureUrl,
 }

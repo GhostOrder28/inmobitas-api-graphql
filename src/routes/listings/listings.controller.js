@@ -9,11 +9,11 @@ const { ValidationError } = require('../../errors/api-errors');
 
 const { listingValidationSchema } = require('../../joi/listings-validation.schema');
 
-function httpGetAllListings (knex) {
+function httpGetAllListings () {
   return async (req, res) => {
-    const params = req.params;
+    const { knexInstance, params } = req;
     try {
-      const listings = await getAllListings(knex, params);
+      const listings = await getAllListings(knexInstance, params);
       return res.status(200).json(listings);
     } catch (error) {
       throw new Error(`There is an error, ${error}`);
@@ -21,13 +21,12 @@ function httpGetAllListings (knex) {
   }
 }
 
-function httpGetOneListing (knex) {
+function httpGetOneListing () {
   return async (req, res) => {
-    const params = req.params; 
-    const t = req.t;
+    const { knexInstance, params, t } = req;
     const clientLang = req.headers["accept-language"];
     try {
-      const listing = await getOneListing(knex, params, t, clientLang);
+      const listing = await getOneListing(knexInstance, params, t, clientLang);
       return res.status(200).json(listing);
     } catch (error) {
       throw new Error(`There is an error, ${error}`);
@@ -35,18 +34,16 @@ function httpGetOneListing (knex) {
   }
 }
 
-function httpPostListing (knex) {
+function httpPostListing () {
   return async (req, res, next) => {
     try {
-      const params = req.params;
-      const listingData = req.body;
-      const t = req.t;
+      const { params, body: listingData, t, knexInstance } = req;
       const clientLang = req.headers["accept-language"];
 
-      const { error } = listingValidationSchema(t, listingData.contractTypeId).validate(req.body, { abortEarly: false });
+      const { error } = listingValidationSchema(t, listingData.contractTypeId).validate(listingData, { abortEarly: false });
       if (error) throw new ValidationError('there is an error validating user input', error.details)
 
-      const listing = await postListing(knex, params, listingData, t, clientLang);
+      const listing = await postListing(knexInstance, params, listingData, t, clientLang);
       return res.status(200).json(listing);
     } catch (error) {
       if (error instanceof ValidationError) return next(error);
@@ -55,12 +52,11 @@ function httpPostListing (knex) {
   }
 }
 
-function httpDeleteOneListing (knex) {
+function httpDeleteOneListing () {
   return async (req, res) => {
-    const params = req.params;
-
+    const { params, knexInstance } = req;
     try {
-      const deletedListingId = await deleteOneListing(knex, params);
+      const deletedListingId = await deleteOneListing(knexInstance, params);
       return res.status(200).json(deletedListingId);
     } catch (error) {
       throw new Error(`There is an error, ${error}`);

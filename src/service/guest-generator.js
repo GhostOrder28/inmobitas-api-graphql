@@ -1,14 +1,56 @@
-const axios = require('axios');
-const bcrypt = require('bcrypt');
 const { randomNumberGenerator } = require('../utils/utility-functions');
+const { loremIpsum } = require("lorem-ipsum");
+const { getAllGuestsPictures, postGuestPicture } = require('../models/pictures.model');
+const { postListing } = require('../models/listings.model');
+const { postEvent } = require('../models/events.model');
+const { 
+  getDayOfYear, 
+  setDayOfYear,
+  setHours,
+  setMinutes,
+  addHours,
+} = require('date-fns');
 
-async function generateDummyListing () {
+const userNamePool = [
+  'Luke Skywalker',
+  'Jim Raynor',
+  'Jhon Galt',
+  'Mara Slania',
+  'Sarah Kerrigan',
+  'Alayna'
+];
+
+const clientNamePool = [
+  'Princess Leia',
+  'Ariel Hanson',
+  'Kaelee Gry',
+  'Radobod Lorenza',
+  'Lakshmi Naoise',
+];
+
+const districtNamePool = [
+  'Midtown twuft',
+  'Sector Koprulu',
+  'Hohood Park',
+  'pailacleb Circle',
+  'Upper South lennunk',
+]
+
+const neighborhoodNamePool = [
+  'Villa Grove',
+  'Painted Hills',
+  'Blodgett Mills',
+  'South Shore',
+  'Beulaville',
+]
+
+function generateDummyListing () {
   const body = {
-    clientName: await generateRandomName(),
+    clientName: generateRandomName(clientNamePool),
     clientContactPhone: generateRandomContactPhone(),
-    district: await generateRandomCityName(),
-    neighborhood: await generateRandomCityName(),
-    addressDetails: await generaeRandomLorem(),
+    district: generateRandomName(districtNamePool),
+    neighborhood: generateRandomName(neighborhoodNamePool),
+    addressDetails: generateRandomLorem('sentences', 2),
     contractTypeId: generateRandomNumber(1, 2),
     petsAllowed: null,
     childrenAllowed: null,
@@ -22,9 +64,9 @@ async function generateDummyListing () {
     numberOfGarages: null,
     numberOfKitchens: null,
     haveNaturalGas: null,
-    estateDetails: await generaeRandomLorem(),
+    estateDetails: generateRandomLorem('sentences', 2),
     isExclusive: generateRandomBoolean(),
-    ownerPreferencesDetails: await generaeRandomLorem(),
+    ownerPreferencesDetails: generateRandomLorem('sentences', 2),
   };
 
   if (body.contractTypeId === 2 && body.estateTypeId !== 4) {
@@ -61,30 +103,100 @@ async function generateDummyListing () {
   return body;
 }
 
-async function generateGuestUser () {
-  const userName = await generateRandomName();
+function generateGuestUser () {
+  const userName = generateRandomName(userNamePool);
+  const emailNick = userName.replaceAll(' ', '');
   const password = randomNumberGenerator();
-  const saltRounds = 10;
-  const hashedPwd = await bcrypt.hash(password, saltRounds);
+  const randomIdentifier = Math.floor(Math.random() * 1000000000);
 
   const user = {
     names: userName,
-    email: `${userName}@test.com`,
+    email: `${emailNick}_${randomIdentifier}@test.com`,
     contactPhone: generateRandomContactPhone(),
     password,
-    hashedPwd,
   };
 
   return user;
 }
 
-async function generateRandomName () {
-  const boyName = await axios.get('https://names.drycodes.com/1?nameOptions=boy_names')
-  const girlName = await axios.get('https://names.drycodes.com/1?nameOptions=girl_names');
-  const names = [boyName.data[0], girlName.data[0]]
-  console.log(names)
-  const selector = generateRandomNumber(0, 1) 
-  const selectedName = names[selector];
+function generateEvent (timePeriod) {
+  console.time("generateEvent");
+
+  const eventTitle = generateRandomLorem('words', 3);
+
+  const now = new Date();
+  let startDate = now;
+  let endDate = null;
+  const minHour = 8;
+  const maxHour = 18;
+  const possibleMinutes = [0, 30, 15];
+  const startHour = generateRandomNumber(minHour, maxHour);
+  const startMinute = possibleMinutes[generateRandomNumber(0, 2)];
+  const eventLength = generateRandomNumber(0, 2);
+
+  if (timePeriod === 'future') {
+    const startDay = getDayOfYear(now) + generateRandomNumber(1, 30);
+    startDate = setDayOfYear(startDate, startDay);
+  } else if (timePeriod === 'past') {
+    const startDay = getDayOfYear(now) - generateRandomNumber(1, 30);
+    startDate = setDayOfYear(startDate, startDay);
+  } else {
+    const startDay = getDayOfYear(now);
+    startDate = setDayOfYear(startDate, startDay);
+  }
+
+  startDate = setHours(startDate, startHour);
+  startDate = setMinutes(startDate, startMinute);
+
+  if (eventLength !== 0) endDate = addHours(startDate, eventLength);
+
+  const event = {
+    title: eventTitle,
+    startDate,
+    endDate,
+  }
+
+  console.log('generated event: ', event);
+  console.timeEnd("generateEvent");
+
+  return event;
+}
+
+async function populateGuestData (knexInstance, userId, t, clientLang) {
+  const pictures = await getAllGuestsPictures(knexInstance);
+  console.log('guest pictures: ', pictures);
+  for (let i = 0; i < 15; i++) {
+    const listingData = generateDummyListing();
+    const listing = await postListing(knexInstance, { userid: userId }, listingData, t, clientLang);
+    const estateId = listing.estateId;
+
+    for (let j = 0; j < 3; j++) {
+      const guestPictureIdx = generateRandomNumber(0, pictures.length - 1);
+      console.log('inserting ids: ', userId, estateId);
+      const picture = await postGuestPicture(
+        knexInstance, 
+        { userid: userId, estateid: estateId },
+        pictures[guestPictureIdx].filename
+      );
+    }
+  }
+  for (let i = 0; i < 5; i++) {
+    const eventData = generateEvent('present');
+    const data = await postEvent(knexInstance, { userid: userId }, eventData);
+  }
+  for (let i = 0; i < 10; i++) {
+    const eventData = generateEvent('future');
+    const data = await postEvent(knexInstance, { userid: userId }, eventData);
+  }
+  for (let i = 0; i < 10; i++) {
+    const eventData = generateEvent('past');
+    const data = await postEvent(knexInstance, { userid: userId }, eventData);
+  }
+}
+
+function generateRandomName (pool) {
+  const idx = generateRandomNumber(0, pool.length - 1);
+  const selectedName = pool[idx];
   return selectedName;
 }
 
@@ -93,25 +205,20 @@ function generateRandomContactPhone () {
   return number;
 }
 
-async function generateRandomCityName () {
-  const res = await axios.get('https://names.drycodes.com/1?nameOptions=cities');
-  const cityName = res.data[0];
-  return cityName;
-}
-
-async function generaeRandomLorem () {
-  const res = await axios.get('https://loripsum.net/api/plaintext/1/short');
-  const lorem = res.data;
+function generateRandomLorem (units, count) {
+  const lorem = loremIpsum({ units, count })
   return lorem;
 }
 
 function generateRandomNumber (min, max, excludeZero) {
+  console.time("generateRandomNumber");
   min = Math.ceil(min);
   max = Math.floor(max);
   const result = Math.floor(Math.random() * (max - min + 1)) + min;
   if (excludeZero && result === 0) {
     return generateRandomNumber(min, max, excludeZero);
   }
+  console.timeEnd("generateRandomNumber");
   return result;
 }
 
@@ -123,4 +230,7 @@ function generateRandomBoolean () {
 module.exports = {
   generateDummyListing,
   generateGuestUser,
+  generateEvent,
+  generateRandomNumber,
+  populateGuestData,
 }

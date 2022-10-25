@@ -1,10 +1,11 @@
 const { getListingPresets } = require('../../models/listing-presets.model');
 
-function httpGetListingPresets (knex) {
+function httpGetListingPresets () {
   return async (req, res) => {
+    const { knexInstance } = req;
     const clientLang = req.headers["accept-language"];
     try {
-      const listingPresets = await getListingPresets(knex, clientLang);
+      const listingPresets = await getListingPresets(knexInstance, clientLang);
       console.log(listingPresets);
       return res.status(200).json(listingPresets);
     } catch (error) {

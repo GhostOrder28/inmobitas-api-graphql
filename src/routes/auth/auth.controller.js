@@ -5,48 +5,25 @@ const { ValidationError } = require('../../errors/api-errors');
 const { formatDbResponse } = require('../../utils/utility-functions');
 const { AuthenticationError, DuplicateEntityError } = require('../../errors/db-errors');
 
-const { 
-  signup,
-  findOneUser,
-} = require('../../models/auth.model');
-const { postListing } = require('../../models/listings.model');
+const { signup, findOneUser } = require('../../models/auth.model');
 const { 
   signinValidationSchema,
   signupValidationSchema
 } = require('../../joi/auth-validation.schema');
-const { knexGuest, knexMain } = require('../../knex/knex-config');
 
-const { generateDummyListing, generateGuestUser } = require('../../service/guest-generator');
-
-function getPassportMiddleware (userType, next) {
-  return passport.authenticate(
-    'local',
-    {
-      failureRedirect: '/failure',
-      session: true
-    },
-    function (err, user, info) {
-      if (err) throw new Error(err);
-      if (info) return next(new AuthenticationError(info.message));
-      if (!user) throw new Error('user is not defined');
-      const userIdentifier = {
-        userId: user.userId,
-        userType,
-      }
-      req.login(userIdentifier, next);
-      return res.status(200).json(user);
-    }
-  )
-}
+const { 
+  generateGuestUser, 
+  populateGuestData,
+} = require('../../service/guest-generator');
 
 function httpSignin () {
   return (req, res, next) => {
-    const { email, password, userType } = req.body;
-    const t = req.t;
+    const { email, password } = req.body;
+    const { usertype } = req.params;
+    const { t } = req;
     try {
-      const { error } = signinValidationSchema(req.t).validate({ email, password }, { abortEarly: false });
+      const { error } = signinValidationSchema(t).validate({ email, password }, { abortEarly: false });
       if (error) throw new ValidationError('there is an error when validating user input', error.details);
-      //getPassportMiddleware(userType, next)(req, res, next);
       passport.authenticate(
         'local',
         {
@@ -59,7 +36,7 @@ function httpSignin () {
           if (!user) throw new Error('user is not defined');
           const userIdentifier = {
             userId: user.userId,
-            userType,
+            userType: usertype,
           }
           req.login(userIdentifier, next);
           return res.status(200).json(user);
@@ -72,20 +49,33 @@ function httpSignin () {
   }
 }
 
-function httpSignup (knex) {
+function httpSignup () {
   return async (req, res, next) => {
-    const signupData = req.body;
-
     try {
-      const { error } = signupValidationSchema(req.t).validate(signupData, { abortEarly: false })
-      if (error) throw new ValidationError('there is a validation error', error.details);
+      let signupData;
+      const { knexInstance, t } = req;
+      const { usertype } = req.params;
+      const clientLang = req.headers["accept-language"];
+      
+      if (usertype === 'guest') {
+        signupData = generateGuestUser();
+      }
+      if (usertype === 'normal') {
+        signupData = req.body;
+        const { error } = signupValidationSchema(t).validate(signupData, { abortEarly: false })
+        if (error) throw new ValidationError('there is a validation error', error.details);
+      } 
 
       const saltRounds = 10;
       signupData.hashedPwd = await bcrypt.hash(signupData.password, saltRounds);
 
-      const signupResponse = await signup(req.knexInstance, signupData, req.t);
-      console.log('signupResponse: ', signupResponse);
-      return res.status(200).json({ ...signupResponse, userType: 'normal' });
+      const signupResponse = await signup(knexInstance, signupData, t);
+      const { email, password, userId } = signupResponse;
+      console.time("guest data population");
+      if (usertype === 'guest') await populateGuestData(knexInstance, userId, t, clientLang);
+      console.timeEnd("guest data population");
+
+      return res.status(200).json({ email, password, userId, userType: usertype });
     } catch (error) {
       if (
         error instanceof ValidationError ||
@@ -111,13 +101,13 @@ function httpSigninWithGoogle (knex) {
   }
 }
 
-function httpGetUser (knex) {
+function httpGetUser () {
   return async (req, res, next) => {
-    if (req.user) {
+    const { user, knexInstance, t } = req;
+    if (user) {
       try {
-        const dbUser = await findOneUser(knex, req.user);
-        console.log('dbUser', dbUser)
-        if (!dbUser.length) throw new AuthenticationError(req.t('wrongCredentials'));
+        const dbUser = await findOneUser(knexInstance, user);
+        if (!dbUser.length) throw new AuthenticationError(t('wrongCredentials'));
         return res.status(200).json(formatDbResponse(dbUser[0]));
       } catch (error) {
         if (error instanceof AuthenticationError) return next(error);
@@ -129,28 +119,10 @@ function httpGetUser (knex) {
   }
 }
 
-function httpGetGuest (knex) {
-  return async (req, res) => {
-    const signupData = await generateGuestUser();
-    const t = req.t;
-    const clientLang = req.headers["accept-language"];
-    const signupResponse = await signup(knexGuest, signupData, req.t);
-    console.log('returning userData to client: ', { ...signupResponse, userType: 'guest'  })
-    return res.status(200).json({ ...signupResponse, userType: 'guest' });
-
-    //const listingData = await generateDummyListing();
-    //const listing = await postListing(knexGuest, { userid }, listingData, t, clientLang);
-    //console.log('guest user:', user);
-    //console.log('listing:', listing);
-    //res.status(200).json('guest generated succesfully!');
-  }
-}
-
 module.exports = {
   httpSignin,
   httpSignup,
   httpSignout,
   httpSigninWithGoogle,
   httpGetUser,
-  httpGetGuest,
 }

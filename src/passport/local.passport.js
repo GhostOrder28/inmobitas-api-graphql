@@ -13,10 +13,11 @@ const AUTH_OPTIONS = {
 async function verifyCallback (req, username, password, done) {
   // username is email
   console.log('verify callback reached');
+  const { knexInstance, t } = req;
   try {
-    const signinData = await signin(req.knexInstance, username);
+    const signinData = await signin(knexInstance, username);
 
-    if (!signinData) throw new AuthenticationError(req.t('wrongCredentials'));
+    if (!signinData) throw new AuthenticationError(t('wrongCredentials'));
     
     const match = await bcrypt.compare(password, signinData.password);
 
@@ -28,7 +29,7 @@ async function verifyCallback (req, username, password, done) {
       console.log('user credentials matched! info being sent to passport.authenticate callback: ', user);
       done(null, user);
     } else {
-      throw new AuthenticationError(req.t('wrongCredentials'))
+      throw new AuthenticationError(t('wrongCredentials'))
     }
   } catch (error) {
     if (

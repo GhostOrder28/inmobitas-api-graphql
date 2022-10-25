@@ -19,8 +19,8 @@ function clientsValidationSchema (t) {
       'any.required': t('clientBadAgeNumber')
     }),
 
-    clientDetails: Joi.string().pattern(/^[0-9a-zA-ZñÑáéíóúüÁÉÍÓÚ\.\:\;\,\s]+$/).allow(null)
-    .messages({ 'string.pattern.base': t('lettersSpacesAndSpecialCharactersOnlyAllowed') }),
+    clientDetails: Joi.string().pattern(/^[0-9a-zA-ZñÑáéíóúüÁÉÍÓÚ\?\'\/\.\:\;\,\s]+$/).allow(null)
+    .messages({ 'string.pattern.base': t('detailsAllowedCharacters') }),
 
     clientType: Joi.string().required()
   });

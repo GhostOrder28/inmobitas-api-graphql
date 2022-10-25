@@ -32,7 +32,7 @@ async function signin (knex, userEmail) {
 }
 
 async function signup (knex, signupData, t) {
-
+  console.log('signup model reached!')
   const {
     names,
     email,
@@ -40,6 +40,7 @@ async function signup (knex, signupData, t) {
     password,
     hashedPwd,
   } = signupData;
+  let userId;
 
   try {
     await knex.transaction(async trx => {
@@ -50,11 +51,12 @@ async function signup (knex, signupData, t) {
       })
         .into('users')
         .returning('*');
+      userId = userData[0].user_id;
       
       console.log('userData: ', userData);
 
       const userCredentials = await trx.insert({
-        user_id: userData[0].user_id,
+        user_id: userId,
         password: hashedPwd
       })
         .into('users_credentials')
@@ -64,7 +66,7 @@ async function signup (knex, signupData, t) {
       
     });
 
-    return { email, password }
+    return { email, password, userId }
   } catch (err) {
     if (err.code === UNIQUE_VIOLATION && err.constraint === 'agents_email_key') {
       throw new DuplicateEntityError(t('emailAlreadyExists'));

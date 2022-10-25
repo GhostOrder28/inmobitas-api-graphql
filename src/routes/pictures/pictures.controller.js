@@ -4,11 +4,11 @@ const {
   deletePicture,
 } = require('../../models/pictures.model');
 
-function httpGetAllPictures (knex) {
+function httpGetAllPictures () {
   return async (req, res) => {
-    const params = req.params;
+    const { params, knexInstance } = req;
     try {
-      const pictures = await getAllPictures(knex, params);
+      const pictures = await getAllPictures(knexInstance, params);
       return res.status(200).json(pictures);
     } catch (error) {
       throw new Error(`There is an error, ${error}`);
@@ -16,12 +16,11 @@ function httpGetAllPictures (knex) {
   }
 }
 
-function httpPostPicture (knex) {
+function httpPostPicture () {
   return async (req, res) => {
-    const params = req.params;
-    const file = req.file;
+    const { params, knexInstance, file } = req;
     try {
-      const picture = await postPicture(knex, params, file);
+      const picture = await postPicture(knexInstance, params, file);
       return res.status(200).json(picture);
     } catch (error) {
       throw new Error(`There is an error, ${error}`);
@@ -29,11 +28,11 @@ function httpPostPicture (knex) {
   }
 }
 
-function httpDeletePicture (knex) {
+function httpDeletePicture () {
   return async (req, res) => {
-    const params = req.params;
+    const { params, knexInstance } = req;
     try {
-      const deletedPicture = await deletePicture(knex, params);
+      const deletedPicture = await deletePicture(knexInstance, params);
       return res.status(200).json(deletedPicture);
     } catch (error) {
       throw new Error(`There is an error, ${error}`);

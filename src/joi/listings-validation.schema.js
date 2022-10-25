@@ -15,9 +15,9 @@ function listingValidationSchema (t, contractTypeId) {
       'string.pattern.base': t('lettersAndSpacesOnlyAllowed'),
       'any.required': t('districtRequired') 
     }),
-    neighborhood: Joi.string().pattern(/^[0-9a-zA-ZñÑáéíóúüÁÉÍÓÚ\s]+$/i).allow(null)
-    .messages({ 'string.pattern.base': t('lettersAndSpacesOnlyAllowed') }),
-    addressDetails: Joi.string().pattern(/^[0-9a-zA-ZñÑáéíóúüÁÉÍÓÚ\.\:\;\,\s]+$/).allow(null)
+    neighborhood: Joi.string().pattern(/^[0-9a-zA-ZñÑáéíóúüÁÉÍÓÚ\'\.\/\s]+$/i).allow(null)
+    .messages({ 'string.pattern.base': t('neighborhoodAllowedCharacters') }),
+    addressDetails: Joi.string().pattern(/^[0-9a-zA-ZñÑáéíóúüÁÉÍÓÚ\?\'\/\.\:\;\,\s]+$/).allow(null)
     .messages({ 'string.pattern.base': t('lettersSpacesAndSpecialCharactersOnlyAllowed') }),
     contractTypeId: Joi.number().required(),
     //currencyTypeId: Joi.number().required(),
@@ -32,13 +32,13 @@ function listingValidationSchema (t, contractTypeId) {
     numberOfBathrooms: Joi.number().allow(null),
     numberOfGarages: Joi.number().allow(null),
     numberOfKitchens: Joi.number().allow(null),
-    estateDetails: Joi.string().pattern(/^[0-9a-zA-ZñÑáéíóúüÁÉÍÓÚ\.\:\;\,\s]+$/).allow(null)
+    estateDetails: Joi.string().pattern(/^[0-9a-zA-ZñÑáéíóúüÁÉÍÓÚ\?\'\/\.\:\;\,\s]+$/).allow(null)
     .messages({ 'string.pattern.base': t('lettersSpacesAndSpecialCharactersOnlyAllowed') }),
     //fee: Joi.number().allow(null),
     //signedDate: Joi.date().allow(null),
     //startDate: Joi.date().allow(null),
     //endDate: Joi.date().allow(null),
-    ownerPreferencesDetails: Joi.string().pattern(/^[0-9a-zA-ZñÑáéíóúüÁÉÍÓÚ\.\:\;\,\s]+$/).allow(null)
+    ownerPreferencesDetails: Joi.string().pattern(/^[0-9a-zA-ZñÑáéíóúüÁÉÍÓÚ\?\'\/\.\:\;\,\s]+$/).allow(null)
     .messages({ 'string.pattern.base': t('lettersSpacesAndSpecialCharactersOnlyAllowed') }),
     //isPercentage: Joi.boolean().allow(null),
     isExclusive: Joi.boolean().allow(null),

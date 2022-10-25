@@ -8,14 +8,13 @@ const {
   httpSignout,
   httpSigninWithGoogle, 
   httpGetUser,
-  httpGetGuest,
 } = require('./auth.controller');
 const { checkUserType } = require('../../middlewares/user-type.middlewares');
 
 const authRouter = express.Router();
-
-authRouter.post('/signup', httpSignup(knex));
-authRouter.post('/signin', checkUserType, httpSignin());
+authRouter.post('/signup/:usertype', checkUserType, httpSignup());
+authRouter.get('/signup/:usertype', checkUserType, httpSignup());
+authRouter.post('/signin/:usertype', checkUserType, httpSignin());
 authRouter.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
 authRouter.get('/google/callback',
   passport.authenticate('google', {
@@ -26,6 +25,5 @@ authRouter.get('/google/callback',
 );
 authRouter.get('/getuser', httpGetUser(knex));
 authRouter.get('/signout', httpSignout());
-authRouter.get('/guest', httpGetGuest(knex));
 
 module.exports = authRouter;

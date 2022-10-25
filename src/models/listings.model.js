@@ -129,17 +129,17 @@ async function getUngroupedListingData (listing) {
     clientContactPhone: Number(listing.contact_phone), // why this prop was being returned as string?
     contractTypeId: listing.contract_type_id,
     isExclusive: listing.is_exclusive,
-    currencyTypeId: listing.currency_type_id,
-    fee: listing.fee,
-    isPercentage: listing.is_percentage,
-    signedDate: listing.signed_date,
-    startDate: listing.start_date,
-    endDate: listing.end_date,
+    //currencyTypeId: listing.currency_type_id,
+    //fee: listing.fee,
+    //isPercentage: listing.is_percentage,
+    //signedDate: listing.signed_date,
+    //startDate: listing.start_date,
+    //endDate: listing.end_date,
     estateTypeId: listing.estate_type_id,
     district: strParseOut(listing.district),
     neighborhood: strParseOut(listing.neighborhood),
     addressDetails: listing.address_details,
-    estatePrice: listing.estate_price,
+    //estatePrice: listing.estate_price,
     floorLocation: listing.floor_location,
     numberOfFloors: listing.number_of_floors,
     totalArea: listing.total_area,
@@ -153,7 +153,7 @@ async function getUngroupedListingData (listing) {
     petsAllowed: listing.pets_allowed,
     childrenAllowed: listing.children_allowed,
     ownerPreferencesDetails: listing.owner_preferences_details,
-    utilitiesIncluded: listing.utilities_included,
+    //utilitiesIncluded: listing.utilities_included,
   }
 }
 
@@ -212,7 +212,40 @@ async function getOneListing (knex, params, t, clientLang) {
       .leftJoin('owner_preferences', 'e.estate_id', 'owner_preferences.estate_id')
       .where('clients.user_id', '=', userid)
       .andWhere('e.estate_id', '=', estateid)
-      .select('*', 'e.estate_id', 'clients.client_id', 'c.contract_id') // WARNING: selection order is important, otherwise the retuned null values from the left joins would overwrite the previous ones which are correct
+      .select(
+        // owner
+        'clients.name',
+        'clients.contact_phone',
+        // location
+        'e.district',
+        'e.neighborhood',
+        'e.address_details',
+        // estate
+        'e.estate_type_id',
+        'e.floor_location',
+        'e.number_of_floors',
+        'e.total_area',
+        'e.built_area',
+        'e.estate_details',
+        // features
+        'features.number_of_bedrooms',
+        'features.number_of_bathrooms',
+        'features.number_of_garages',
+        'features.number_of_kitchens',
+        'features.natural_gas',
+        // contract
+        'c.contract_type_id',
+        'c.is_exclusive',
+        // owner preferences
+        'owner_preferences.pets_allowed',
+        'owner_preferences.children_allowed',
+        'owner_preferences.owner_preferences_details',
+        // ids
+        'clients.client_id',
+        'e.estate_id',
+        'c.contract_id'
+      )
+      //.select('*', 'e.estate_id', 'clients.client_id', 'c.contract_id') // WARNING: selection order is important, otherwise the retuned null values from the left joins would overwrite the previous ones which are correct
       .returning('*');
 
     if (group) {

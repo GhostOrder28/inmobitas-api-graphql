@@ -7,11 +7,11 @@ const {
 
 const { clientsValidationSchema } = require('../../joi/clients-validation.schema');
 
-function httpGetOneClient (knex) {
+function httpGetOneClient () {
   return async (req, res) => {
-    const params = req.params;
+    const { params, knexInstance } = req;
     try {
-      const client = await getOneClient(knex, params);
+      const client = await getOneClient(knexInstance, params);
       return res.status(200).json(client);
     } catch (error) {
       throw new Error(`There is an error, ${error}`);
@@ -19,11 +19,11 @@ function httpGetOneClient (knex) {
   }
 }
 
-function httpGetAllClients (knex) {
+function httpGetAllClients () {
   return async (req, res) => {
-    const params = req.params;
+    const { params, knexInstance } = req;
     try {
-      const clients = await getAllClients(knex, params);
+      const clients = await getAllClients(knexInstance, params);
       return res.status(200).json(clients);
     } catch (error) {
       throw new Error(`There is an error, ${error}`);
@@ -31,17 +31,14 @@ function httpGetAllClients (knex) {
   }
 }
 
-function httpUpdateOneClient (knex) {
+function httpUpdateOneClient () {
   return async (req, res) => {
-    const params = req.params;
-    const t = req.t;
-    const clientData = req.body;
-
+    const { params, knexInstance, t, body: clientData } = req;
     const { error } = clientsValidationSchema(t).validate(req.body, { abortEarly: false });
     if (error) return res.status(400).json({ validationErrors: error.details });
 
     try {
-      const updatedClient = await updateOneClient(knex, params, clientData);
+      const updatedClient = await updateOneClient(knexInstance, params, clientData);
       return res.status(200).json(updatedClient);
     } catch (error) {
       throw new Error(`There is an error, ${error}`);
@@ -49,12 +46,11 @@ function httpUpdateOneClient (knex) {
   }
 }
 
-function httpDeleteOneListing (knex) {
+function httpDeleteOneListing () {
   return async (req, res) => {
-    const params = req.params;
-
+    const { params, knexInstance } = req;
     try {
-      const deletedClientId = await deleteOneClient(knex, params);
+      const deletedClientId = await deleteOneClient(knexInstance, params);
       return res.status(200).json(deletedClientId);
     } catch (error) {
       throw new Error(`There is an error, ${error}`);

@@ -6,32 +6,75 @@ const {
   getPicturesDirPath, 
   getPictureUrl, 
   getPicturePublicId, 
-  deleteResource 
+  deleteResource,
+  getGuestPictureUrl,
 } = require('../utils/cloudinary');
 
 async function getAllPictures (knex, params) {
   const { userid, estateid } = params;
 
     try {
-      const pictures = await knex.select('picture_id', 'filename')
+      const pictures = await knex.select('picture_id', 'filename', 'auto_generated')
         .from('pictures')
         .where('estate_id', '=', estateid)
-        .returning('*')
+        .returning('*');
 
       const formattedPictures = pictures.map(pic => ({
         pictureId: pic.picture_id,
         filename: pic.filename,
-        smallSizeUrl: getPictureUrl(userid, estateid, pic.filename, 'small'),
-        largeSizeUrl: getPictureUrl(userid, estateid, pic.filename, 'large'),
+        smallSizeUrl: pic.auto_generated ?
+          getGuestPictureUrl(pic.filename, 'small') :
+          getPictureUrl(userid, estateid, pic.filename, 'small'),
+        largeSizeUrl: pic.auto_generated ?
+          getGuestPictureUrl(pic.filename, 'large') :
+          getPictureUrl(userid, estateid, pic.filename, 'large'),
       }))
 
       console.log('formattedPictures: ', formattedPictures);
 
       return formattedPictures;
     } catch (err) {
-      console.log('asassasass');
       throw new Error(err)
     }
+}
+
+async function getAllGuestsPictures (knex) {
+  try {
+    const pictures = await knex.select('picture_id', 'filename')
+      .from('guest_pictures')
+      .returning('*');
+
+    return pictures;
+  } catch (err) {
+    throw new Error(err);
+  }
+}
+
+async function postGuestPicture (knex, params, filename) {
+  try {
+    const { userid, estateid } = params;
+    const picture = await knex.insert({
+      user_id: userid,
+      estate_id: estateid,
+      filename,
+      auto_generated: true,
+    })
+      .into('pictures')
+      .returning('*')
+
+    const formattedPicture = {
+      pictureId: picture[0].picture_id,
+      filename,
+      smallSizeUrl: getGuestPictureUrl(filename, 'small'),
+      largeSizeUrl: getGuestPictureUrl(filename, 'large'),
+    } 
+
+    console.log('formattedPicture: ', formattedPicture);
+
+    return formattedPicture;
+  } catch (err) {
+    throw new Error(err);
+  }
 }
 
 async function postPicture (knex, params, file) {
@@ -104,12 +147,14 @@ async function deletePicture (knex, params) {
         .del()
         .returning('*')
 
-      const { filename } = deletedPicture[0];
+      const { filename, auto_generated } = deletedPicture[0];
 
-      await Promise.all([
-        deleteResource(getPicturePublicId(userid, estateid, filename, 'small')),
-        deleteResource(getPicturePublicId(userid, estateid, filename, 'large')),
-      ])
+      if (!auto_generated) {
+        await Promise.all([
+          deleteResource(getPicturePublicId(userid, estateid, filename, 'small')),
+          deleteResource(getPicturePublicId(userid, estateid, filename, 'large')),
+        ])
+      }
       
       return Number(pictureid);
     } catch (err) {
@@ -120,5 +165,7 @@ async function deletePicture (knex, params) {
 module.exports = {
   getAllPictures,
   postPicture,
-  deletePicture
+  deletePicture,
+  getAllGuestsPictures,
+  postGuestPicture
 }

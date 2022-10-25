@@ -1,11 +1,10 @@
 const { getPresentation } = require('../../models/presentations.model');
 
-function httpGetPresentation (knex) {
+function httpGetPresentation () {
   return async (req, res) => {
-    const params = req.params;
-    const t = req.t;
+    const { params, knexInstance, t } = req;
     try {
-      const pdfBuffer = await getPresentation(knex, params, t);
+      const pdfBuffer = await getPresentation(knexInstance, params, t);
       return res.status(200).send(pdfBuffer)
     } catch (error) {
       throw new Error(`There is an error, ${error}`);

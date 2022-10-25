@@ -1,6 +1,5 @@
 const express = require('express');
 
-const knex = require('../../knex/knex-config');
 const {
   httpGetOneClient,
   httpGetAllClients,
@@ -10,9 +9,9 @@ const {
 
 const clientsRouter = express.Router();
 
-clientsRouter.get('/:userid', httpGetAllClients(knex));
-clientsRouter.get('/:userid/:clientid', httpGetOneClient(knex));
-clientsRouter.put('/:userid/:clientid', httpUpdateOneClient(knex));
-clientsRouter.delete('/:userid/:clientid', httpDeleteOneListing(knex));
+clientsRouter.get('/:userid', httpGetAllClients());
+clientsRouter.get('/:userid/:clientid', httpGetOneClient());
+clientsRouter.put('/:userid/:clientid', httpUpdateOneClient());
+clientsRouter.delete('/:userid/:clientid', httpDeleteOneListing());
 
 module.exports = clientsRouter;

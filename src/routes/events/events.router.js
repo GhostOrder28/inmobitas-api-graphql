@@ -1,6 +1,5 @@
 const express = require('express');
 
-const knex = require('../../knex/knex-config');
 const {
   httpGetEventsFromCurrentMonth,
   httpGetTodayEvents,
@@ -10,10 +9,10 @@ const {
 
 const eventsRouter = express.Router();
 
-eventsRouter.get('/:userid/:currentmonth/:currentyear', httpGetEventsFromCurrentMonth(knex));
-eventsRouter.get('/:userid/:nowdate', httpGetTodayEvents(knex));
-eventsRouter.post('/:userid', httpPostEvent(knex));
-eventsRouter.put('/:userid/:eventid', httpPostEvent(knex));
-eventsRouter.delete('/:userid/:eventid', httpDeleteEvent(knex));
+eventsRouter.get('/:userid/:currentmonth/:currentyear', httpGetEventsFromCurrentMonth());
+eventsRouter.get('/:userid/:nowdate', httpGetTodayEvents());
+eventsRouter.post('/:userid', httpPostEvent());
+eventsRouter.put('/:userid/:eventid', httpPostEvent());
+eventsRouter.delete('/:userid/:eventid', httpDeleteEvent());
 
 module.exports = eventsRouter;

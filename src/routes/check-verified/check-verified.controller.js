@@ -4,17 +4,17 @@ const {
 } = require('../../models/check-verified.model');
 const { UnverifiedUserError } = require('../../errors/db-errors');
 
-function httpCheckVerifiedUser (knex) {
+function httpCheckVerifiedUser () {
   return async (req, res, next) => {
-    const params = req.params;
+    const { params, knexInstance, t } = req;
     try {
-      const totalPicturesNumber = await getTotalPicturesNumber(knex, params);
+      const totalPicturesNumber = await getTotalPicturesNumber(knexInstance, params);
       if (totalPicturesNumber > 6) {
-        const isVerified = await checkVerifiedUser(knex, params);
+        const isVerified = await checkVerifiedUser(knexInstance, params);
         if (!isVerified) {
           throw new UnverifiedUserError('user is not verified', {
-            errorMessage: req.t('uploadLimitExceeded'),
-            errorMessageDescription: req.t('uploadLimitExceededReason')
+            errorMessage: t('uploadLimitExceeded'),
+            errorMessageDescription: t('uploadLimitExceededReason')
           });
         }
       }
