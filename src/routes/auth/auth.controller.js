@@ -104,9 +104,10 @@ function httpSigninWithGoogle (knex) {
 function httpGetUser () {
   return async (req, res, next) => {
     const { user, knexInstance, t } = req;
+    console.log('user credentials: ', user)
     if (user) {
       try {
-        const dbUser = await findOneUser(knexInstance, user);
+        const dbUser = await findOneUser(knexInstance, user.userId);
         if (!dbUser.length) throw new AuthenticationError(t('wrongCredentials'));
         return res.status(200).json(formatDbResponse(dbUser[0]));
       } catch (error) {

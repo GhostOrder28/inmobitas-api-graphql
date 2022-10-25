@@ -1,4 +1,4 @@
-const { getPictureUrl } = require('../utils/cloudinary');
+const { getPictureUrl, getGuestPictureUrl } = require('../utils/cloudinary');
 const pdfBuilder = require('../service/pdf-builder');
 
 async function getPresentation (knex, params, t) {
@@ -26,8 +26,15 @@ async function getPresentation (knex, params, t) {
       .where('user_id', '=', userid)
       .andWhere('estate_id', '=', estateid)
       .returning('*');
-
-    const urls = listingImages.map(img => getPictureUrl(userid, estateid, img.filename, 'large'));
+    console.log('pictures from db: ', listingImages);
+    const urls = listingImages.map(img => {
+      if (img.auto_generated) {
+        return getGuestPictureUrl(img.filename, 'large');
+      } else {
+        return getPictureUrl(userid, estateid, img.filename, 'large');
+      }
+    });
+    console.log('pictures urls: ', urls);
     const pdfBuffer = await pdfBuilder(urls, userData[0], contactMessage);
   
     return pdfBuffer;

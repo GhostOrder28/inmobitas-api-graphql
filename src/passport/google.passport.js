@@ -1,6 +1,6 @@
 const passport = require('passport');
 const { signupWithGoogle, findOneUser } = require('../models/auth.model');
-const knex = require('../knex/knex-config');
+const { knexMain } = require('../knex/knex-config');
 
 const AUTH_OPTIONS = {
   callbackURL: `${process.env.API_BASE_URL}/auth/google/callback`,
@@ -15,13 +15,22 @@ async function verifyCallback (accessToken, refreshToken, profile, done) {
     names: profile._json.name,
     email: profile._json.email
   }
-  const dbUser = await findOneUser(knex, userData.oAuthId, true);
+  console.log('before requesting user...')
+  const dbUser = await findOneUser(knexMain, userData.oAuthId, true);
+  console.log('dbUser: ', dbUser);
+  const user = {
+    userId: null,
+    userType: 'normal'
+  }
   if (dbUser.length) {
-    done(null, dbUser[0].user_id);
+    user.userId = dbUser[0].user_id;
+    done(null, user);
   } else {
     console.log('user is not registered');
-    const newUser = await signupWithGoogle(knex, userData);
-    done(null, newUser[0].userId);
+    const newUser = await signupWithGoogle(knexMain, userData);
+    console.log('new user: ', newUser);
+    user.userId = newUser.userId;
+    done(null, user);
   }
   //console.log('google profile: ', profile);
 }

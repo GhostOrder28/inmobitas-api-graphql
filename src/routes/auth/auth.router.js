@@ -23,7 +23,7 @@ authRouter.get('/google/callback',
   }),
   httpSigninWithGoogle(knex)
 );
-authRouter.get('/getuser', httpGetUser(knex));
+authRouter.get('/getuser', checkUserType, httpGetUser(knex));
 authRouter.get('/signout', httpSignout());
 
 module.exports = authRouter;
