@@ -1,4 +1,5 @@
 {
+	"rateLimit": "Alcanzaste el límite de peticiones para usuarios invitados por hoy :(", 
 	"wrongCredentials": "Credenciales Incorrectas.",
 	"emailAlreadyExists": "El correo ya existe.",
 	"lettersOnlyAllowed": "Caracter inválido, solo se permite letras.",

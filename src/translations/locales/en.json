@@ -1,4 +1,5 @@
 {
+	"rateLimit": "You reached the limit of guests users requests for today :(",
 	"wrongCredentials": "Wrong credentials.",
 	"emailAlreadyExists": "Email already exists.",
 	"lettersOnlyAllowed": "Invalid character, only letters are allowed.",

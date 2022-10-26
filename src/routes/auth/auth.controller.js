@@ -16,6 +16,11 @@ const {
   populateGuestData,
 } = require('../../service/guest-generator');
 
+function httpLimitHandler (req, res, next) {
+  const { t } = req;
+  return res.status(429).json({ limitReachedError: t('rateLimit') })
+}
+
 function httpSignin () {
   return (req, res, next) => {
     const { email, password } = req.body;
@@ -126,4 +131,5 @@ module.exports = {
   httpSignout,
   httpSigninWithGoogle,
   httpGetUser,
+  httpLimitHandler,
 }
