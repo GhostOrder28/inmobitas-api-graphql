@@ -1,5 +1,4 @@
 const { strParseIn, capFirst } = require('../utils/utility-functions');
-const { formatISO  } = require('date-fns');
 
 async function getEventsFromCurrentMonth (knex, params) {
   const { userid, currentmonth } = params;
@@ -14,16 +13,8 @@ async function getEventsFromCurrentMonth (knex, params) {
     const formattedCurrentMonthEvents = currentMonthEvents.map(event => ({
       eventId: event.event_id,
       title: capFirst(event.title),
-			startDate: event.auto_generated ?
-        formatISO(event.start_date).slice(0, -1) :
-        event.start_date,
-      endDate: event.end_date ? 
-        (
-          event.auto_generated ?
-          formatISO(event.end_date).slice(0, -1) :
-          event.end_date
-        ) :
-        null
+			startDate: event.start_date,
+      endDate: event.end_date,
     }))
 
     console.log('formattedCurrentMonthEvents: ', formattedCurrentMonthEvents)
