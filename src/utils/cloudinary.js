@@ -19,21 +19,22 @@ const bufferToStream = buffer => {
   return readable;
 }
 
-const getPicturesDirPath = (userId, estateId, size) =>
-  process.env.NODE_ENV === 'production' ?
-    `/inmobitas/u_${userId}/l_${estateId}/pictures/${size}` :
-    `/inmobitas_dev/u_${userId}/l_${estateId}/pictures/${size}`;
+const getPicturesDirPath = (userId, estateId, size, userType) => {
+  if (userType === 'guest') return `/inmobitas_guest/u_${userId}/l_${estateId}/pictures/${size}`;
+  if (process.env.NODE_ENV === 'production') return `/inmobitas/u_${userId}/l_${estateId}/pictures/${size}`;
+  return `/inmobitas_dev/u_${userId}/l_${estateId}/pictures/${size}`
+}
 
 const getPdfDirPath = (userId, estateId) =>
   process.env.NODE_ENV === 'production' ?
     `/inmobitas/u_${userId}/l_${estateId}` :
     `/inmobitas_dev/u_${userId}/l_${estateId}`
 
-const getPicturePublicId = (userId, estateId, filename, size) =>
-  `${getPicturesDirPath(userId, estateId, size).substring(1)}/${filename}_${size}`;
+const getPicturePublicId = (userId, estateId, filename, size, userType) =>
+  `${getPicturesDirPath(userId, estateId, size, userType).substring(1)}/${filename}_${size}`;
 
-const getPictureUrl = (userId, estateId, filename, size) => 
-  `${uploadPath}${getPicturesDirPath(userId, estateId, size)}/${filename}_${size}.webp`
+const getPictureUrl = (userId, estateId, filename, size, userType) => 
+  `${uploadPath}${getPicturesDirPath(userId, estateId, size, userType)}/${filename}_${size}.webp`
 
 const getGuestPictureUrl = (filename, size) =>
   `${uploadPath}/inmobitas/u_guest/${size}/${filename}.webp`

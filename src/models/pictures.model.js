@@ -10,7 +10,7 @@ const {
   getGuestPictureUrl,
 } = require('../utils/cloudinary');
 
-async function getAllPictures (knex, params) {
+async function getAllPictures (knex, params, userType) {
   const { userid, estateid } = params;
 
     try {
@@ -24,10 +24,10 @@ async function getAllPictures (knex, params) {
         filename: pic.filename,
         smallSizeUrl: pic.auto_generated ?
           getGuestPictureUrl(pic.filename, 'small') :
-          getPictureUrl(userid, estateid, pic.filename, 'small'),
+          getPictureUrl(userid, estateid, pic.filename, 'small', userType),
         largeSizeUrl: pic.auto_generated ?
           getGuestPictureUrl(pic.filename, 'large') :
-          getPictureUrl(userid, estateid, pic.filename, 'large'),
+          getPictureUrl(userid, estateid, pic.filename, 'large', userType),
       }))
 
       console.log('formattedPictures: ', formattedPictures);
@@ -77,7 +77,7 @@ async function postGuestPicture (knex, params, filename) {
   }
 }
 
-async function postPicture (knex, params, file) {
+async function postPicture (knex, params, file, userType) {
 
   const { userid, estateid } = params;
   const { buffer } = file;
@@ -100,14 +100,14 @@ async function postPicture (knex, params, file) {
         cloudinaryUploader(
           smallPicBuffer,
           filename,
-          getPicturesDirPath(userid, estateid, 'small'),
+          getPicturesDirPath(userid, estateid, 'small', userType),
           'img',
           'small'
         ),
         cloudinaryUploader(
           largePicBuffer,
           filename,
-          getPicturesDirPath(userid, estateid, 'large'),
+          getPicturesDirPath(userid, estateid, 'large', userType),
           'img',
           'large'
         )
@@ -126,8 +126,8 @@ async function postPicture (knex, params, file) {
       const formattedPicture = {
         pictureId: picture[0].picture_id,
         filename,
-        smallSizeUrl: getPictureUrl(userid, estateid, filename, 'small'),
-        largeSizeUrl: getPictureUrl(userid, estateid, filename, 'large'),
+        smallSizeUrl: getPictureUrl(userid, estateid, filename, 'small', userType),
+        largeSizeUrl: getPictureUrl(userid, estateid, filename, 'large', userType),
       } 
 
       console.log('formattedPicture: ', formattedPicture);
@@ -138,7 +138,7 @@ async function postPicture (knex, params, file) {
     }
 }
 
-async function deletePicture (knex, params) {
+async function deletePicture (knex, params, userType) {
   const { userid, estateid, pictureid } = params;
     
     try {
@@ -151,8 +151,8 @@ async function deletePicture (knex, params) {
 
       if (!auto_generated) {
         await Promise.all([
-          deleteResource(getPicturePublicId(userid, estateid, filename, 'small')),
-          deleteResource(getPicturePublicId(userid, estateid, filename, 'large')),
+          deleteResource(getPicturePublicId(userid, estateid, filename, 'small', userType)),
+          deleteResource(getPicturePublicId(userid, estateid, filename, 'large', userType)),
         ])
       }
       
