@@ -152,7 +152,6 @@ function generateEvent (timePeriod, tzOffset) {
     startDate = setMinutes(startDate, startMinute);
   }
 
-  startDate = setHours(startDate, startHour);
   startDate = setMinutes(startDate, startMinute);
 
   if (eventLength !== 0) endDate = addHours(startDate, eventLength);
@@ -161,6 +160,7 @@ function generateEvent (timePeriod, tzOffset) {
     title: eventTitle,
     startDate,
     endDate,
+    auto_generated: true,
   }
 
   return event;
