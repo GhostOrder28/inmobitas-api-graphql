@@ -6,8 +6,8 @@ const { postEvent } = require('../models/events.model');
 const { 
   getDayOfYear, 
   setDayOfYear,
-  setHours,
   setMinutes,
+  addHours,
   subHours,
   getHours,
 } = require('date-fns');
