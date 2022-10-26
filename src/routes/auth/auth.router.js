@@ -13,7 +13,7 @@ const { checkUserType } = require('../../middlewares/user-type.middlewares');
 
 const authRouter = express.Router();
 authRouter.post('/signup/:usertype', checkUserType, httpSignup());
-authRouter.get('/signup/:usertype', checkUserType, httpSignup());
+authRouter.get('/signup/:usertype/:tzOffset', checkUserType, httpSignup());
 authRouter.post('/signin/:usertype', checkUserType, httpSignin());
 authRouter.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
 authRouter.get('/google/callback',

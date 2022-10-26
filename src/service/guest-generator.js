@@ -8,7 +8,8 @@ const {
   setDayOfYear,
   setHours,
   setMinutes,
-  addHours,
+  subHours,
+  getHours,
 } = require('date-fns');
 
 const userNamePool = [
@@ -119,30 +120,36 @@ function generateGuestUser () {
   return user;
 }
 
-function generateEvent (timePeriod) {
-  console.time("generateEvent");
-
+function generateEvent (timePeriod, tzOffset) {
   const eventTitle = generateRandomLorem('words', 3);
-
   const now = new Date();
   let startDate = now;
   let endDate = null;
+  let actualHour = getHours(startDate) - tzOffset;
+  if (actualHour < 0) actualHour = 24 + actualHour;
   const minHour = 8;
   const maxHour = 18;
   const possibleMinutes = [0, 30, 15];
-  const startHour = generateRandomNumber(minHour, maxHour);
   const startMinute = possibleMinutes[generateRandomNumber(0, 2)];
   const eventLength = generateRandomNumber(0, 2);
 
   if (timePeriod === 'future') {
-    const startDay = getDayOfYear(now) + generateRandomNumber(1, 30);
+    const startDay = getDayOfYear(startDate) + generateRandomNumber(1, 30);
     startDate = setDayOfYear(startDate, startDay);
   } else if (timePeriod === 'past') {
-    const startDay = getDayOfYear(now) - generateRandomNumber(1, 30);
+    const startDay = getDayOfYear(startDate) - generateRandomNumber(1, 30);
     startDate = setDayOfYear(startDate, startDay);
   } else {
-    const startDay = getDayOfYear(now);
-    startDate = setDayOfYear(startDate, startDay);
+    if (actualHour > maxHour) {
+      startDate = subHours(startDate, generateRandomNumber(actualHour - maxHour, actualHour - minHour));
+    } else if (actualHour < minHour) {
+      startDate = addHours(startDate, generateRandomNumber(maxHour - actualHour, minHour - actualHour));
+    } else {
+      const addOrSub = generateRandomNumber(0, 1);
+      if (addOrSub === 0) startDate = addHours(startDate, generateRandomNumber(0, maxHour - actualHour));
+      if (addOrSub === 1) startDate = subHours(startDate, generateRandomNumber(0, actualHour - minHour));
+    }
+    startDate = setMinutes(startDate, startMinute);
   }
 
   startDate = setHours(startDate, startHour);
@@ -156,15 +163,11 @@ function generateEvent (timePeriod) {
     endDate,
   }
 
-  console.log('generated event: ', event);
-  console.timeEnd("generateEvent");
-
   return event;
 }
 
-async function populateGuestData (knexInstance, userId, t, clientLang) {
+async function populateGuestData (knexInstance, userId, t, clientLang, tzOffset) {
   const pictures = await getAllGuestsPictures(knexInstance);
-  console.log('guest pictures: ', pictures);
   for (let i = 0; i < 15; i++) {
     const listingData = generateDummyListing();
     const listing = await postListing(knexInstance, { userid: userId }, listingData, t, clientLang);
@@ -172,7 +175,6 @@ async function populateGuestData (knexInstance, userId, t, clientLang) {
 
     for (let j = 0; j < 3; j++) {
       const guestPictureIdx = generateRandomNumber(0, pictures.length - 1);
-      console.log('inserting ids: ', userId, estateId);
       const picture = await postGuestPicture(
         knexInstance, 
         { userid: userId, estateid: estateId },
@@ -181,15 +183,15 @@ async function populateGuestData (knexInstance, userId, t, clientLang) {
     }
   }
   for (let i = 0; i < 5; i++) {
-    const eventData = generateEvent('present');
+    const eventData = generateEvent('present', tzOffset);
     const data = await postEvent(knexInstance, { userid: userId }, eventData);
   }
   for (let i = 0; i < 10; i++) {
-    const eventData = generateEvent('future');
+    const eventData = generateEvent('future', tzOffset);
     const data = await postEvent(knexInstance, { userid: userId }, eventData);
   }
   for (let i = 0; i < 10; i++) {
-    const eventData = generateEvent('past');
+    const eventData = generateEvent('past', tzOffset);
     const data = await postEvent(knexInstance, { userid: userId }, eventData);
   }
 }
@@ -210,15 +212,10 @@ function generateRandomLorem (units, count) {
   return lorem;
 }
 
-function generateRandomNumber (min, max, excludeZero) {
-  console.time("generateRandomNumber");
+function generateRandomNumber (min, max) {
   min = Math.ceil(min);
   max = Math.floor(max);
   const result = Math.floor(Math.random() * (max - min + 1)) + min;
-  if (excludeZero && result === 0) {
-    return generateRandomNumber(min, max, excludeZero);
-  }
-  console.timeEnd("generateRandomNumber");
   return result;
 }
 

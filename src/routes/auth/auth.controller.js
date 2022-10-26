@@ -54,7 +54,7 @@ function httpSignup () {
     try {
       let signupData;
       const { knexInstance, t } = req;
-      const { usertype } = req.params;
+      const { usertype, tzOffset } = req.params;
       const clientLang = req.headers["accept-language"];
       
       if (usertype === 'guest') {
@@ -72,7 +72,7 @@ function httpSignup () {
       const signupResponse = await signup(knexInstance, signupData, t);
       const { email, password, userId } = signupResponse;
       console.time("guest data population");
-      if (usertype === 'guest') await populateGuestData(knexInstance, userId, t, clientLang);
+      if (usertype === 'guest') await populateGuestData(knexInstance, userId, t, clientLang, tzOffset);
       console.timeEnd("guest data population");
 
       return res.status(200).json({ email, password, userId, userType: usertype });
