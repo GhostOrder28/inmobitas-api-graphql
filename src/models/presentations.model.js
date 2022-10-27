@@ -1,7 +1,7 @@
 const { getPictureUrl, getGuestPictureUrl } = require('../utils/cloudinary');
 const pdfBuilder = require('../service/pdf-builder');
 
-async function getPresentation (knex, params, t) {
+async function getPresentation (knex, params, t, userType) {
   try {
     const { userid, estateid } = params;
     const contactMessage = {
@@ -31,7 +31,7 @@ async function getPresentation (knex, params, t) {
       if (img.auto_generated) {
         return getGuestPictureUrl(img.filename, 'large');
       } else {
-        return getPictureUrl(userid, estateid, img.filename, 'large');
+        return getPictureUrl(userid, estateid, img.filename, 'large', userType);
       }
     });
     console.log('pictures urls: ', urls);
