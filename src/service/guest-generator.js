@@ -122,10 +122,10 @@ function generateGuestUser () {
 
 function generateEvent (timePeriod, tzOffset) {
   const eventTitle = generateRandomLorem('words', 3);
-  const now = new Date();
-  let startDate = now;
+  let startDate = new Date();
   let endDate = null;
-  let actualHour = getHours(startDate) - tzOffset;
+  const localTzFix = process.env.PRODUCTION ? Number(tzOffset) : 0;
+  const actualHour = getHours(startDate) - localTzFix;
   if (actualHour < 0) actualHour = 24 + actualHour;
   const minHour = 8;
   const maxHour = 18;
@@ -136,20 +136,22 @@ function generateEvent (timePeriod, tzOffset) {
   if (timePeriod === 'future') {
     const startDay = getDayOfYear(startDate) + generateRandomNumber(1, 30);
     startDate = setDayOfYear(startDate, startDay);
-  } else if (timePeriod === 'past') {
+  } 
+
+  if (timePeriod === 'past') {
     const startDay = getDayOfYear(startDate) - generateRandomNumber(1, 30);
     startDate = setDayOfYear(startDate, startDay);
+  }
+
+  // hour randomization
+  if (actualHour > maxHour) {
+    startDate = subHours(startDate, generateRandomNumber(actualHour - maxHour, actualHour - minHour));
+  } else if (actualHour < minHour) {
+    startDate = addHours(startDate, generateRandomNumber(maxHour - actualHour, minHour - actualHour));
   } else {
-    if (actualHour > maxHour) {
-      startDate = subHours(startDate, generateRandomNumber(actualHour - maxHour, actualHour - minHour));
-    } else if (actualHour < minHour) {
-      startDate = addHours(startDate, generateRandomNumber(maxHour - actualHour, minHour - actualHour));
-    } else {
-      const addOrSub = generateRandomNumber(0, 1);
-      if (addOrSub === 0) startDate = addHours(startDate, generateRandomNumber(0, maxHour - actualHour));
-      if (addOrSub === 1) startDate = subHours(startDate, generateRandomNumber(0, actualHour - minHour));
-    }
-    startDate = setMinutes(startDate, startMinute);
+    const addOrSub = generateRandomNumber(0, 1);
+    if (addOrSub === 0) startDate = addHours(startDate, generateRandomNumber(0, maxHour - actualHour));
+    if (addOrSub === 1) startDate = subHours(startDate, generateRandomNumber(0, actualHour - minHour));
   }
 
   startDate = setMinutes(startDate, startMinute);
@@ -168,31 +170,37 @@ function generateEvent (timePeriod, tzOffset) {
 
 async function populateGuestData (knexInstance, userId, t, clientLang, tzOffset) {
   const pictures = await getAllGuestsPictures(knexInstance);
-  for (let i = 0; i < 15; i++) {
+  
+  // listing and pictures
+  for (let i = 0; i < 20; i++) {
     const listingData = generateDummyListing();
+    const numberOfPictures = generateRandomNumber(3, 5);
+
     const listing = await postListing(knexInstance, { userid: userId }, listingData, t, clientLang);
     const estateId = listing.estateId;
 
-    for (let j = 0; j < 3; j++) {
+    for (let j = 0; j < numberOfPictures; j++) {
       const guestPictureIdx = generateRandomNumber(0, pictures.length - 1);
-      const picture = await postGuestPicture(
+      await postGuestPicture(
         knexInstance, 
         { userid: userId, estateid: estateId },
         pictures[guestPictureIdx].filename
       );
     }
   }
+
+  // events
   for (let i = 0; i < 5; i++) {
     const eventData = generateEvent('present', tzOffset);
-    const data = await postEvent(knexInstance, { userid: userId }, eventData);
+    await postEvent(knexInstance, { userid: userId }, eventData);
   }
-  for (let i = 0; i < 10; i++) {
+  for (let i = 0; i < 30; i++) {
     const eventData = generateEvent('future', tzOffset);
-    const data = await postEvent(knexInstance, { userid: userId }, eventData);
+    await postEvent(knexInstance, { userid: userId }, eventData);
   }
-  for (let i = 0; i < 10; i++) {
+  for (let i = 0; i < 30; i++) {
     const eventData = generateEvent('past', tzOffset);
-    const data = await postEvent(knexInstance, { userid: userId }, eventData);
+    await postEvent(knexInstance, { userid: userId }, eventData);
   }
 }
 
