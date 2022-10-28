@@ -76,9 +76,7 @@ function httpSignup () {
 
       const signupResponse = await signup(knexInstance, signupData, t);
       const { email, password, userId } = signupResponse;
-      console.time("guest data population");
       if (usertype === 'guest') await populateGuestData(knexInstance, userId, t, clientLang, tzOffset);
-      console.timeEnd("guest data population");
 
       return res.status(200).json({ email, password, userId, userType: usertype });
     } catch (error) {
