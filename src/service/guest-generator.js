@@ -126,7 +126,6 @@ function generateEvent (timePeriod, tzOffset) {
   let endDate = null;
   const localTzFix = process.env.PRODUCTION ? Number(tzOffset) : 0;
   const actualHour = getHours(startDate) - localTzFix;
-  if (actualHour < 0) actualHour = 24 + actualHour;
   const minHour = 8;
   const maxHour = 18;
   const possibleMinutes = [0, 30, 15];
