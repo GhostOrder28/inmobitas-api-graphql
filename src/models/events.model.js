@@ -69,7 +69,7 @@ async function postEvent (knex, params, eventData) {
       title: strParseIn(title), 
       start_date: startDate,
       end_date: endDate || null,
-			auto_generated,
+      ... auto_generated ? { auto_generated } : {},
     })
       .into('events')
       .onConflict('event_id')
