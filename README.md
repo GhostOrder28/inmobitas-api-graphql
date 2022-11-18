@@ -17,9 +17,9 @@ The idea of the App is to facilitate the tasks of a real estate agent helping hi
 * **Query builder:** Knex.
 
 ## Links
-* This is the Graphql version of the original [inmobitas-api](https://github.com/GhostOrder28/inmobitas-api)
-* This API is the counterpart for the inmobitas client: https://github.com/GhostOrder28/inmobitas-client 
-* You can visit the live application here: https://inmobitas-api-production.up.railway.app
+* This is the Graphql version of the original [inmobitas-api](https://github.com/GhostOrder28/inmobitas-api).
+* This API is the counterpart for the [inmobitas-client](https://github.com/GhostOrder28/inmobitas-client).
+* You can visit the live application [here](https://inmobitas-api-production.up.railway.app).
 
 ## Misc
 The logotype was designed by me as it also happens that I'm a former Graphic Designer, you can check a little more on that here: https://www.behance.net/gallery/138778479/Inmobitas-Real-Estate-Concept
