@@ -1,4 +1,5 @@
-# Inmobitas Restfull API.
+# Inmobitas Graphql API.
+_This is the Graphql version of the original [inmobitas-api](https://github.com/GhostOrder28/inmobitas-api)._
 
 The idea of the App is to facilitate the tasks of a real estate agent helping him or her to arrange the information of the clients(owners) and their estates, for this the developed application offers the following features:
 * Authentication and Authorization both local and OAuth.
@@ -16,6 +17,7 @@ The idea of the App is to facilitate the tasks of a real estate agent helping hi
 * **Query builder:** Knex.
 
 ## Links
+* This is the Graphql version of the original [inmobitas-api](https://github.com/GhostOrder28/inmobitas-api)
 * This API is the counterpart for the inmobitas client: https://github.com/GhostOrder28/inmobitas-client 
 * You can visit the live application here: https://inmobitas-api-production.up.railway.app
 
