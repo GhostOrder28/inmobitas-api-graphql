@@ -2,6 +2,9 @@ const https = require('https');
 const http = require('http');
 const fs = require('fs');
 const express = require('express');
+const { graphqlHTTP } = require('express-graphql');
+const { makeExecutableSchema } = require('@graphql-tools/schema');
+const { loadFilesSync } = require('@graphql-tools/load-files');
 const path = require('node:path');
 require('dotenv').config();
 const enforce = require('express-sslify');
@@ -78,44 +81,63 @@ passport.deserializeUser((id, done) => {
   done(null, id); 
 });
 
+//graphql config
+const typesArray = loadFilesSync('*/**', {
+  extensions: ['graphql']
+});
+
+const resolversArray = loadFilesSync('*/**', {
+  extensions: ['resolvers.js']
+});
+
+const schema = makeExecutableSchema({
+  typeDefs: typesArray,
+  resolvers: resolversArray
+});
+
+app.use('/graphql', graphqlHTTP({
+  schema,
+  graphiql: true
+}))
+
 //middelwares
-app.use(helmet(helmetOptions));
-app.use(cors(corsOptions));
-app.use(cookieSession(cookieSessionOptions));
-app.use(passport.initialize());
-app.use(passport.session());
-app.use(express.static(path.join(__dirname, "..", "public")));
-app.use(express.json({limit: '50mb'}));
-app.use(express.urlencoded(urlencodedOptions));
-app.use(morgan('combined'));
-app.use(middleware.handle(i18next));
+// app.use(helmet(helmetOptions));
+// app.use(cors(corsOptions));
+// app.use(cookieSession(cookieSessionOptions));
+// app.use(passport.initialize());
+// app.use(passport.session());
+// app.use(express.static(path.join(__dirname, "..", "public")));
+// app.use(express.json({limit: '50mb'}));
+// app.use(express.urlencoded(urlencodedOptions));
+// app.use(morgan('combined'));
+// app.use(middleware.handle(i18next));
 //app.use(enforce.HTTPS({ trustProtoHeader: true }))
 
 //routes
-app.use('/auth', authRouter);
-app.get('/signin', (req, res) => {
-  res.sendFile(path.join(__dirname, "../public/index.html"));
-});
-app.get('/signup', (req, res) => {
-  res.sendFile(path.join(__dirname, "../public/index.html"));
-});
-app.use(checkUserType);
-app.use(checkLoggedIn);
-app.use('/listings', listingsRouter);
-app.use('/clients', clientRouter);
-app.use('/pictures', picturesRouter);
-app.use('/presentations', presentationsRouter);
-app.use('/events', eventsRouter);
-app.use('/listingpresets', listingPresetsRouter);
-app.use('/checkverified', checkVerifiedRouter);
-app.get('/*', function (req, res) {
-  res.sendFile(path.join(__dirname, "../public/index.html"));
-});
-app.get('/service-worker.js', (req, res) => {
-  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0');
-  res.sendFile(path.resolve(__dirname, '..', 'public', 'service-worker.js'));
-});
-app.use(errorHandler);
+// app.use('/auth', authRouter);
+// app.get('/signin', (req, res) => {
+//   res.sendFile(path.join(__dirname, "../public/index.html"));
+// });
+// app.get('/signup', (req, res) => {
+//   res.sendFile(path.join(__dirname, "../public/index.html"));
+// });
+// app.use(checkUserType);
+// app.use(checkLoggedIn);
+// app.use('/listings', listingsRouter);
+// app.use('/clients', clientRouter);
+// app.use('/pictures', picturesRouter);
+// app.use('/presentations', presentationsRouter);
+// app.use('/events', eventsRouter);
+// app.use('/listingpresets', listingPresetsRouter);
+// app.use('/checkverified', checkVerifiedRouter);
+// app.get('/*', function (req, res) {
+//   res.sendFile(path.join(__dirname, "../public/index.html"));
+// });
+// app.get('/service-worker.js', (req, res) => {
+//   res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0');
+//   res.sendFile(path.resolve(__dirname, '..', 'public', 'service-worker.js'));
+// });
+// app.use(errorHandler);
 //app.use((err, req, res, next) => res.sendStatus(500));
 
 const PORT = process.env.PORT || 3001;
