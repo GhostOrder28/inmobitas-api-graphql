@@ -1,221 +1,28 @@
 const { strParseIn, strParseOut } = require('../utils/utility-functions');
 const { getListingPresets } = require('./listing-presets.model');
 
-function getGroupedListingData (listing, presets, t) {
-  return {
-    clientId: listing.client_id,
-    estateId: listing.estate_id,
-    contractId: listing.contract_id,
-    data: [
-    {
-      header: t('owner'),
-      items: [
-        {
-          label: t('name'),
-          value: strParseOut(listing.name)
-        },
-        {
-          label: t('phone'),
-          value: Number(listing.contact_phone)
-        }
-      ]
-    },
-    {
-      header: t('contract'),
-      items: [
-        {
-          label: t('contractType'),
-          value: presets.contractTypes.find(contractType => contractType.contractTypeId === listing.contract_type_id).contractName
-        },
-        {
-          label: t('exclusive'),
-          value: listing.is_exclusive ? t('yes') : t('no')
-        }
-      ]
-    },
-    ...(listing.contract_type_id === 2 ? [{
-      header: t('ownerPreferences'),
-      items: [
-        {
-          label: t('petsAllowed'),
-          value: listing.pets_allowed ? t('yes') : t('no')
-        },
-        {
-          label: t('childrenAllowed'),
-          value: listing.children_allowed ? t('yes') : t('no')
-        },
-        {
-          label: t('preferencesDetails'),
-          value: listing.owner_preferences_details 
-        }
-      ]
-    }] : []),
-    {
-      header: t('location'),
-      items: [
-        {
-          label: t('district'),
-          value: strParseOut(listing.district) 
-        },
-        {
-          label: t('neighborhood'),
-          value: strParseOut(listing.neighborhood) 
-        },
-        {
-          label: t('addressDetails'),
-          value: listing.address_details 
-        }
-      ]
-    },
-    {
-      header: t('estate'),
-      items: [
-        {
-          label: t('estateType'),
-          value: presets.estateTypes.find(estateType => estateType.estateTypeId === listing.estate_type_id).estateName 
-        },
-        ...listing.estate_type_id !== 1 ? [{
-          label: t('floorLocation'),
-          value: listing.floor_location 
-        }] : [],
-        ...listing.contract_type_id === 1 ? [{
-          label: t('numberOfFloors'),
-          value: listing.number_of_floors 
-        }] : [],
-        {
-          label: t('totalArea'),
-          value: listing.total_area && `${listing.total_area} m²`
-        },
-        {
-          label: t('builtArea'),
-          value: listing.built_area && `${listing.built_area} m²`
-        },
-        {
-          label: t('bedrooms'),
-          value: listing.number_of_bedrooms 
-        },
-        {
-          label: t('bathrooms'),
-          value: listing.number_of_bathrooms 
-        },
-        {
-          label: t('garages'),
-          value: listing.number_of_garages 
-        },
-        {
-          label: t('kitchens'),
-          value: listing.number_of_kitchens 
-        },
-        {
-          label: t('naturalGas'),
-          value: listing.natural_gas ? t('yes') : t('no') 
-        },
-        {
-          label: t('estateDetails'),
-          value: listing.estate_details
-        }
-      ]
-    }
-  ]
-  }
-}
-
-async function getUngroupedListingData (listing) {
-  return {
-    clientId: listing.client_id,
-    estateId: listing.estate_id,
-    contractId: listing.contract_id,
-    clientName: strParseOut(listing.name),
-    clientContactPhone: Number(listing.contact_phone), // why this prop was being returned as string?
-    contractTypeId: listing.contract_type_id,
-    isExclusive: listing.is_exclusive,
-    //currencyTypeId: listing.currency_type_id,
-    //fee: listing.fee,
-    //isPercentage: listing.is_percentage,
-    //signedDate: listing.signed_date,
-    //startDate: listing.start_date,
-    //endDate: listing.end_date,
-    estateTypeId: listing.estate_type_id,
-    district: strParseOut(listing.district),
-    neighborhood: strParseOut(listing.neighborhood),
-    addressDetails: listing.address_details,
-    //estatePrice: listing.estate_price,
-    floorLocation: listing.floor_location,
-    numberOfFloors: listing.number_of_floors,
-    totalArea: listing.total_area,
-    builtArea: listing.built_area,
-    estateDetails: listing.estate_details,
-    numberOfBedrooms: listing.number_of_bedrooms,
-    numberOfBathrooms: listing.number_of_bathrooms,
-    numberOfGarages: listing.number_of_garages,
-    numberOfKitchens: listing.number_of_kitchens,
-    haveNaturalGas: listing.natural_gas,
-    petsAllowed: listing.pets_allowed,
-    childrenAllowed: listing.children_allowed,
-    ownerPreferencesDetails: listing.owner_preferences_details,
-    //utilitiesIncluded: listing.utilities_included,
-  }
-}
-
-async function getAllListings (knex, params) {
+async function getListings (knex, entity) {
   try {
-    const { userid, clientid } = params;
+    const { userId, clientId, estateId } = entity;
 
-    const listings = await knex('estates')
-      .join('contracts', 'estates.estate_id', 'contracts.estate_id')
-      .select('estates.estate_id', 'estates.client_id', 'district', 'neighborhood', 'contracts.estate_price', 'currency_type_id', 'estates.total_area', 'estates.built_area')
-      .where('estates.user_id', '=', userid)
+    const listings = await knex('clients as c')
+      .innerJoin('estates as e', 'c.client_id', 'e.client_id')
+      .innerJoin('contracts as co', 'e.estate_id', 'co.estate_id')
+      .leftJoin('features as f', 'e.estate_id', 'f.estate_id')
+      .leftJoin('owner_preferences as op', 'e.estate_id', 'op.estate_id')
       .modify(function (queryBuilder) {
-        if (clientid) {
-          queryBuilder.andWhere('estates.client_id', '=', clientid);
+        if (clientId) {
+          queryBuilder.where('c.client_id', '=', clientId);
+        } else if (estateId) {
+          queryBuilder.where('e.estate_id', '=', estateId);
+        } else {
+          queryBuilder.where('c.user_id', '=', userId);
         }
       })
-      .returning('*')
-
-    const formattedListings = listings.map(listing => ({
-      estateId: listing.estate_id,
-      clientId: listing.client_id,
-      district: strParseOut(listing.district),
-      neighborhood: strParseOut(listing.neighborhood),
-      totalArea: listing.total_area,
-      builtArea: listing.built_area
-    }));
-
-    console.log('listings: ', formattedListings);
-
-    return formattedListings;
-      
-  } catch (error) {
-    throw new Error(error);
-  }
-}
-
-async function getOneListing (knex, params, t, clientLang) {
-  try {
-    const { userid, estateid, group } = params;
-    console.log('is group?: ', group)
-
-    const contractsSq = knex.select('*')
-      .from('contracts')
-      .where('estate_id', '=', estateid)
-      .as('c')
-
-    const estatesSq = knex.select('*')
-      .from('estates')
-      .where('estate_id', '=', estateid)
-      .as('e')
-
-    const listing = await knex('clients')
-      .join(estatesSq, 'clients.client_id', 'e.client_id')
-      .join(contractsSq, 'clients.client_id', 'c.client_id')
-      .leftJoin('features', 'e.estate_id', 'features.estate_id')
-      .leftJoin('owner_preferences', 'e.estate_id', 'owner_preferences.estate_id')
-      .where('clients.user_id', '=', userid)
-      .andWhere('e.estate_id', '=', estateid)
       .select(
         // owner
-        'clients.name',
-        'clients.contact_phone',
+        'c.name',
+        'c.contact_phone',
         // location
         'e.district',
         'e.neighborhood',
@@ -228,40 +35,59 @@ async function getOneListing (knex, params, t, clientLang) {
         'e.built_area',
         'e.estate_details',
         // features
-        'features.number_of_bedrooms',
-        'features.number_of_bathrooms',
-        'features.number_of_garages',
-        'features.number_of_kitchens',
-        'features.natural_gas',
+        'f.number_of_bedrooms',
+        'f.number_of_bathrooms',
+        'f.number_of_garages',
+        'f.number_of_kitchens',
+        'f.natural_gas',
         // contract
-        'c.contract_type_id',
-        'c.is_exclusive',
+        'co.contract_type_id',
+        'co.is_exclusive',
         // owner preferences
-        'owner_preferences.pets_allowed',
-        'owner_preferences.children_allowed',
-        'owner_preferences.owner_preferences_details',
+        'op.pets_allowed',
+        'op.children_allowed',
+        'op.owner_preferences_details',
         // ids
-        'clients.client_id',
+        'c.client_id',
         'e.estate_id',
-        'c.contract_id'
+        'co.contract_id'
       )
-      //.select('*', 'e.estate_id', 'clients.client_id', 'c.contract_id') // WARNING: selection order is important, otherwise the retuned null values from the left joins would overwrite the previous ones which are correct
       .returning('*');
 
-    if (group) {
-      const listingPresets = await getListingPresets(knex, clientLang);
-      console.log('translator: ', t)
-      const groupedListing = getGroupedListingData(listing[0], listingPresets, t);
-      console.log('groupedListing: ------------------------', groupedListing);
-      return groupedListing;
-    } else {
-      const ungroupListing = getUngroupedListingData(listing[0]);
-      console.log('ungroupListing: ', ungroupListing);
-      return ungroupListing;
-    }
-  } catch (error) {
-    throw new Error(error);
+			const payload = listings.map(listing => {
+        return {
+          clientId: listing.client_id,
+          estateId: listing.estate_id,
+          contractId: listing.contract_id,
+          clientName: strParseOut(listing.name),
+          clientContactPhone: Number(listing.contact_phone), 
+          contractTypeId: listing.contract_type_id,
+          isExclusive: listing.is_exclusive,
+          estateTypeId: listing.estate_type_id,
+          district: strParseOut(listing.district),
+          neighborhood: strParseOut(listing.neighborhood),
+          addressDetails: listing.address_details,
+          floorLocation: listing.floor_location,
+          numberOfFloors: listing.number_of_floors,
+          totalArea: listing.total_area,
+          builtArea: listing.built_area,
+          estateDetails: listing.estate_details,
+          numberOfBedrooms: listing.number_of_bedrooms,
+          numberOfBathrooms: listing.number_of_bathrooms,
+          numberOfGarages: listing.number_of_garages,
+          numberOfKitchens: listing.number_of_kitchens,
+          haveNaturalGas: listing.natural_gas,
+          petsAllowed: listing.pets_allowed,
+          childrenAllowed: listing.children_allowed,
+          ownerPreferencesDetails: listing.owner_preferences_details,
+        }
+			})
+
+    return estateId ? payload[0] : payload
+  } catch(err) {
+    console.error(err)
   }
+
 }
 
 async function postListing (knex, params, listingData, t, clientLang) {
@@ -478,8 +304,7 @@ async function deleteOneListing (knex, params) {
 }
 
 module.exports = {
-  getAllListings,
-  getOneListing,
   postListing,
   deleteOneListing,
+  getListings,
 }

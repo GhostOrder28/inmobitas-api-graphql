@@ -1,0 +1,19 @@
+type Query {
+  clients(userId: ID!): [Client]
+}
+
+enum ClientType {
+  seller
+  landlord
+}
+
+type Client {
+  clientId: ID!
+  clientName: String!
+  clientType: ClientType!
+  age: Int
+  clientContactPhone: String
+  clientDetails: String
+}
+
+

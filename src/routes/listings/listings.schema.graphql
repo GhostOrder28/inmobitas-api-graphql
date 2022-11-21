@@ -1,0 +1,32 @@
+type Query {
+  userListings(userId: ID!): [Listing]
+  clientListings(clientId: ID!): [Listing]
+  listing(estateId: ID!): Listing
+}
+
+type Listing {
+  clientId: ID!
+  estateId: ID!
+  contractId: ID!
+  clientName: String!
+  clientContactPhone: String
+  contractTypeId: ID!
+  estateTypeId: ID!
+  isExclusive: Boolean
+  district: String!
+  neighborhood: String
+  addressDetails: String
+  floorLocation: Int
+  numberOfFloors: Int
+  totalArea: Int
+  builtArea: Int
+  estateDetails: String
+  numberOfBedrooms: Int
+  numberOfBathrooms: Int
+  numberOfGarages: Int
+  numberOfKitchens: Int
+  haveNaturalGas: Boolean
+  petsAllowed: Boolean
+  childrenAllowed: Boolean
+  ownerPreferencesDetails: String
+}

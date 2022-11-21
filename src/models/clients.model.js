@@ -47,21 +47,21 @@ async function getOneClient (knex, params) {
   }
 }
 
-async function getAllClients (knex, params) {
-  const { userid } = params
+async function getAllClients (knex, userId) {
   try {
-    const clients = await knex.select('client_id', 'name', 'contact_phone', 'client_type')
+    const clients = await knex.select('*')
     .from('clients')
-    .where('clients.user_id', '=', userid)
+    .where('clients.user_id', '=', userId)
     .returning('*');
 
     const formattedClients = clients.map(client => ({
       clientId: client.client_id,
       clientName: strParseOut(client.name),
+      clientType: client.client_type,
+      age: client.age,
       clientContactPhone: client.contact_phone,
+      clientDetails: client.client_details,
     }))
-
-    console.log('formattedClients: ', formattedClients);
 
     return formattedClients; 
     
